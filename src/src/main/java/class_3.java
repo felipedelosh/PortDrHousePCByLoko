@@ -1209,9 +1209,9 @@ public class class_3 extends GameCanvas implements Runnable {
       }
    }
 
-   public void keyReleased(int var1) {
-      if ((var1 = this.method_19(var1)) != 0) {
-         heldKeysMask &= ~var1;
+   public void keyReleased(int keyCode) {
+      if ((keyCode = this.method_19(keyCode)) != 0) {
+         heldKeysMask &= ~keyCode;
       }
    }
 
