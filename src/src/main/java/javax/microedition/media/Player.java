@@ -1,1 +1,64 @@
-package javax.microedition.media; import javax.sound.midi.*; public final class Player {private final Sequence sequence;private Sequencer sequencer;private int loops=1;Player(Sequence s){sequence=s;}public void realize()throws Exception{if(sequencer==null){sequencer=MidiSystem.getSequencer();sequencer.open();sequencer.setSequence(sequence);}}public void prefetch()throws Exception{realize();}public void setLoopCount(int n){loops=n;}public long setMediaTime(long t){if(sequencer!=null)sequencer.setMicrosecondPosition(Math.max(0,t));return Math.max(0,t);}public void start()throws Exception{realize();sequencer.setLoopCount(loops<0?Sequencer.LOOP_CONTINUOUSLY:loops-1);sequencer.start();}public void close(){if(sequencer!=null){sequencer.close();sequencer=null;}}public Object getControl(String name){return null;}}
+package javax.microedition.media;
+
+import javax.sound.midi.*;
+
+public final class Player {
+
+    private final Sequence sequence;
+    private Sequencer sequencer;
+    private int loops = 1;
+
+    Player(Sequence s) {
+        sequence = s;
+    }
+
+    public void realize() throws Exception {
+
+        if (sequencer == null) {
+            sequencer = MidiSystem.getSequencer();
+            sequencer.open();
+            sequencer.setSequence(sequence);
+        }
+    }
+
+    public void prefetch() throws Exception {
+        realize();
+    }
+
+    public void setLoopCount(int n) {
+        loops = n;
+    }
+
+    public long setMediaTime(long t) {
+
+        if (sequencer != null) {
+            sequencer.setMicrosecondPosition(Math.max(0, t));
+        }
+
+        return Math.max(0, t);
+    }
+
+    public void start() throws Exception {
+
+        realize();
+
+        sequencer.setLoopCount(
+            loops < 0 ? Sequencer.LOOP_CONTINUOUSLY : loops - 1
+        );
+
+        sequencer.start();
+    }
+
+    public void close() {
+
+        if (sequencer != null) {
+            sequencer.close();
+            sequencer = null;
+        }
+    }
+
+    public Object getControl(String name) {
+        return null;
+    }
+
+}
