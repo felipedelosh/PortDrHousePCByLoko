@@ -1198,14 +1198,14 @@ public class class_3 extends GameCanvas implements Runnable {
       }
    }
 
-   public void keyPressed(int var1) {
-      if ((var1 = this.method_19(var1)) != 0) {
-         if ((heldKeysMask & var1) == 0) {
-            newlyPressedKeysMask |= var1;
+   public void keyPressed(int keyCode) {
+      if ((keyCode = this.method_19(keyCode)) != 0) {
+         if ((heldKeysMask & keyCode) == 0) {
+            newlyPressedKeysMask |= keyCode;
          }
 
-         pendingKeysMask |= var1;
-         heldKeysMask |= var1;
+         pendingKeysMask |= keyCode;
+         heldKeysMask |= keyCode;
       }
    }
 
