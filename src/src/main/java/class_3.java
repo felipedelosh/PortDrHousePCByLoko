@@ -70,8 +70,7 @@ public class class_3 extends GameCanvas implements Runnable {
    private static Vector field_48 = new Vector(1, 1);
    // $VF: renamed from: c javax.microedition.lcdui.Graphics
    private static Graphics field_49 = null;
-   // $VF: renamed from: F int
-   private static int field_50;
+   private static int activeKeysMask;
    // $VF: renamed from: G int
    private static int field_51;
    private static volatile int heldKeysMask;
@@ -1217,7 +1216,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: z () void
    private static void method_20() {
-      field_50 = pendingKeysMask;
+      activeKeysMask = pendingKeysMask;
       field_51 = newlyPressedKeysMask;
       newlyPressedKeysMask = 0;
       pendingKeysMask = pendingKeysMask & heldKeysMask;
@@ -1225,7 +1224,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: a (int) boolean
    public static boolean method_21(int var0) {
-      return (field_50 & var0) != 0;
+      return (activeKeysMask & var0) != 0;
    }
 
    // $VF: renamed from: b (int) boolean
