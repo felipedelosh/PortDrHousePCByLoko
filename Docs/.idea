@@ -1,0 +1,104 @@
+portear el juego original de Doctor House de Java ME a PC (Java SE) utilizando ingeniería inversa e inteligencia artificial
+
+Sore el juego:
+
+House Versión 1.01 (2008)
+Desarrollador mobiground.com
+Plataforma	Java ME (J2ME)
+Configuración declarada	CLDC 1.0
+Perfil declarado MIDP 1.0
+Clase principal	Mapp
+Idiomas	Inglés y español
+
+
+Sobre el port:
+
+Java 21: lenguaje principal.
+Gradle: gestión del proyecto y compilación.
+Java Swing + Java2D: motor gráfico de escritorio.
+Visual Studio Code: entorno de desarrollo.
+Vineflower: descompilación.
+ChatGPT: ingeniería inversa y desarrollo incremental.
+Git: control de versiones.
+
+Java ME original/Implementación para PC
+GameCanvas/JPanel + Game Loop
+Graphics/Graphics2D
+Image/BufferedImage
+Font/java.awt.Font
+RecordStore/Archivos locales
+keyPressed()/Eventos del teclado
+Display/JFrame
+Player/Java Sound según el formato
+
+Plan de desarrollo del proyecto
+
+1:
+Recuperación del juego original
+Conservar los binarios, reconstruir el JAR si es necesario y verificar su funcionamiento en un emulador.
+
+2:
+Descompilación
+Obtener los archivos .java y corregir errores producidos por Vineflower.
+
+3:
+Ingeniería inversa
+Identificar clases, métodos, variables, estados y formatos binarios.
+
+4:
+Capa de compatibilidad
+Implementar las dependencias de Java ME necesarias para ejecutar el código.
+
+5:
+Primer arranque en PC
+Conseguir que el juego abra una ventana y renderice el menú original.
+
+6:
+Jugabilidad
+Recuperar movimientos, interacciones, diálogos y minijuegos.
+
+7:
+Persistencia y audio
+Recuperar partidas guardadas y funciones de sonido, si están presentes.
+
+8:
+Modernización
+Escalado de pantalla, controles configurables, ejecutable y mejoras opcionales.
+
+Arquitectura del proyecto:
+
+DoctorHousePC/
+│
+├── Docs/
+│   ├── PROJECT.md
+│   ├── ARCHITECTURE.md
+│   ├── CLASS_MAPPING.md
+│   ├── METHOD_MAPPING.md
+│   ├── GAME_FLOW.md
+│   └── RESOURCE_FORMATS.md
+│
+├── INPUT/
+│   └── DrHouse.jar
+│
+├── TOOLS/
+│   └── vineflower-1.12.0.jar
+│
+├── DECOMPILED/
+│   └── VINEFLOWER/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   │
+│   └── test/
+│       └── java/
+│
+├── README.md
+├── AGENTS.md
+└── .gitignore
+
+Ejecutar el descompilador:
+
+java -jar .\TOOLS\vineflower-1.12.0.jar --rename-members=true --folder .\INPUT\DrHouse.jar .\DECOMPILED\VINEFLOWER
+

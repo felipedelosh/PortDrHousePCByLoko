@@ -1,0 +1,1 @@
+package javax.microedition.media; import java.io.*; public final class Manager {public static Player createPlayer(InputStream in,String type)throws Exception{try(in){return new Player(javax.sound.midi.MidiSystem.getSequence(in));}}}

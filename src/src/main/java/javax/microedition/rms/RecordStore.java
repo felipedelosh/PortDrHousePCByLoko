@@ -1,0 +1,4 @@
+package javax.microedition.rms;
+import java.nio.file.*;import java.io.*;import java.util.Arrays;
+public final class RecordStore {private final Path path;private byte[] data;private RecordStore(String name)throws IOException{path=Path.of(System.getProperty("house.saveDir",Path.of(System.getProperty("user.home"),".doctorhousepc").toString()),name+".sav");if(Files.exists(path))data=Files.readAllBytes(path);}
+ public static RecordStore openRecordStore(String n,boolean create)throws IOException{return new RecordStore(n);}public int getNumRecords(){return data==null?0:1;}public int addRecord(byte[] b,int o,int l)throws IOException{setRecord(1,b,o,l);return 1;}public byte[] getRecord(int id){return data.clone();}public void setRecord(int id,byte[] b,int o,int l)throws IOException{data=Arrays.copyOfRange(b,o,o+l);Files.createDirectories(path.getParent());Files.write(path,data);}public void closeRecordStore(){} }
