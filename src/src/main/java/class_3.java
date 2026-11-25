@@ -75,7 +75,7 @@ public class class_3 extends GameCanvas implements Runnable {
    // $VF: renamed from: G int
    private static int field_51;
    // $VF: renamed from: H int
-   private static volatile int field_52;
+   private static volatile int heldKeysMask;
    // $VF: renamed from: I int
    private static volatile int field_53;
    // $VF: renamed from: J int
@@ -1203,18 +1203,18 @@ public class class_3 extends GameCanvas implements Runnable {
 
    public void keyPressed(int var1) {
       if ((var1 = this.method_19(var1)) != 0) {
-         if ((field_52 & var1) == 0) {
+         if ((heldKeysMask & var1) == 0) {
             field_53 |= var1;
          }
 
          field_54 |= var1;
-         field_52 |= var1;
+         heldKeysMask |= var1;
       }
    }
 
    public void keyReleased(int var1) {
       if ((var1 = this.method_19(var1)) != 0) {
-         field_52 &= ~var1;
+         heldKeysMask &= ~var1;
       }
    }
 
@@ -1223,7 +1223,7 @@ public class class_3 extends GameCanvas implements Runnable {
       field_50 = field_54;
       field_51 = field_53;
       field_53 = 0;
-      field_54 = field_54 & field_52;
+      field_54 = field_54 & heldKeysMask;
    }
 
    // $VF: renamed from: a (int) boolean
@@ -1243,7 +1243,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: c () void
    public static void method_24() {
-      field_52 = 0;
+      heldKeysMask = 0;
    }
 
    // $VF: renamed from: A () void
