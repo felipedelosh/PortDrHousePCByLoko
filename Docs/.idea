@@ -102,3 +102,70 @@ Ejecutar el descompilador:
 
 java -jar .\TOOLS\vineflower-1.12.0.jar --rename-members=true --folder .\INPUT\DrHouse.jar .\DECOMPILED\VINEFLOWER
 
+
+Nota: El código del juego está ofuscado... pero la idea es alcanzar la siguiente arquitectura:
+
+java/
+│
+├── com/
+│   └── doctorhouse/
+│       │
+│       ├── Main.java
+│       │
+│       ├── application/
+│       │   └── HouseApplication.java
+│       │
+│       ├── engine/
+│       │   ├── GameEngine.java
+│       │   ├── GameLoop.java
+│       │   ├── GameContext.java
+│       │   │
+│       │   ├── state/
+│       │   │   ├── GameState.java
+│       │   │   └── GameStateManager.java
+│       │   │
+│       │   ├── input/
+│       │   │   ├── InputManager.java
+│       │   │   └── GameKey.java
+│       │   │
+│       │   ├── graphics/
+│       │   │   ├── GameRenderer.java
+│       │   │   ├── SpriteData.java
+│       │   │   ├── SpriteManager.java
+│       │   │   └── SpriteRenderer.java
+│       │   │
+│       │   ├── resources/
+│       │   │   ├── ResourceLoader.java
+│       │   │   └── BinaryReader.java
+│       │   │
+│       │   ├── audio/
+│       │   │   └── AudioManager.java
+│       │   │
+│       │   └── persistence/
+│       │       └── SaveGameManager.java
+│       │
+│       └── game/
+│           │
+│           ├── world/
+│           │   ├── IsometricMap.java
+│           │   ├── WorldManager.java
+│           │   └── CollisionManager.java
+│           │
+│           ├── character/
+│           │   ├── CharacterManager.java
+│           │   └── AnimationManager.java
+│           │
+│           ├── dialogue/
+│           │   ├── DialogueManager.java
+│           │   └── LocalizationManager.java
+│           │
+│           ├── script/
+│           │   └── ScriptInterpreter.java
+│           │
+│           ├── minigame/
+│           │
+│           └── ui/
+│               ├── MainMenu.java
+│               └── PauseMenu.java
+│
+└── javax/
