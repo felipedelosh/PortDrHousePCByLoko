@@ -96,6 +96,10 @@ The initial desktop port has rendered the original hospital, characters, and Spa
 
 Open a terminal in the project root and verify your installation:
 
+```
+cd src
+```
+
 ```powershell
 java -version
 javac -version
