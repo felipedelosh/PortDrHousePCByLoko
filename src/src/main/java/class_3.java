@@ -75,10 +75,8 @@ public class class_3 extends GameCanvas implements Runnable {
    // $VF: renamed from: G int
    private static int field_51;
    private static volatile int heldKeysMask;
-   // $VF: renamed from: I int
    private static volatile int newlyPressedKeysMask;
-   // $VF: renamed from: J int
-   private static volatile int field_54;
+   private static volatile int pendingKeysMask;
    // $VF: renamed from: b int[]
    public static final int[] field_55 = new int[]{0, 90, 24576, 24666, 8192, 8282, 16384, 16474};
    // $VF: renamed from: c int[]
@@ -1206,7 +1204,7 @@ public class class_3 extends GameCanvas implements Runnable {
             newlyPressedKeysMask |= var1;
          }
 
-         field_54 |= var1;
+         pendingKeysMask |= var1;
          heldKeysMask |= var1;
       }
    }
@@ -1219,10 +1217,10 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: z () void
    private static void method_20() {
-      field_50 = field_54;
+      field_50 = pendingKeysMask;
       field_51 = newlyPressedKeysMask;
       newlyPressedKeysMask = 0;
-      field_54 = field_54 & heldKeysMask;
+      pendingKeysMask = pendingKeysMask & heldKeysMask;
    }
 
    // $VF: renamed from: a (int) boolean
