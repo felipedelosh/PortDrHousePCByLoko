@@ -1086,7 +1086,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: x () void
    private static final void method_15() {
-      method_20();
+      updateInputState();
       method_228();
    }
 
@@ -1213,8 +1213,7 @@ public class class_3 extends GameCanvas implements Runnable {
       }
    }
 
-   // $VF: renamed from: z () void
-   private static void method_20() {
+   private static void updateInputState() {
       activeKeysMask = pendingKeysMask;
       justPressedKeysMask = newlyPressedKeysMask;
       newlyPressedKeysMask = 0;
