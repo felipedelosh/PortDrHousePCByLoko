@@ -95,7 +95,7 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: f boolean
    private static boolean field_65;
    // $VF: renamed from: K int
-   private static int field_66;
+   private static int audioVolume;
    // $VF: renamed from: L int
    private static int field_67;
    // $VF: renamed from: g boolean
@@ -2172,7 +2172,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             try {
                VolumeControl var2;
                if ((var2 = (VolumeControl)field_69.getControl("VolumeControl")) != null) {
-                  var2.setLevel(field_66);
+                  var2.setLevel(audioVolume);
                }
             } catch (Exception var3) {
             }
@@ -2231,13 +2231,12 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
    }
 
-   // $VF: renamed from: d (int) void
-   public static void method_75(int var0) {
+   public static void setAudioVolume(int var0) {
       try {
-         field_66 = Math.max(0, Math.min(var0, 100));
+         audioVolume = Math.max(0, Math.min(var0, 100));
          VolumeControl var1;
          if (field_67 >= 0 && (var1 = (VolumeControl)field_69.getControl("VolumeControl")) != null) {
-            var1.setLevel(field_66);
+            var1.setLevel(audioVolume);
          }
       } catch (Exception var2) {
       }
@@ -5078,13 +5077,13 @@ public class GameEngine extends GameCanvas implements Runnable {
       if (method_76()) {
          if (field_71[3] == 33) {
             field_71[3] = 66;
-            method_75(field_71[3]);
+            setAudioVolume(field_71[3]);
             return;
          }
 
          if (field_71[3] == 66) {
             field_71[3] = 100;
-            method_75(field_71[3]);
+            setAudioVolume(field_71[3]);
             return;
          }
 
@@ -5097,7 +5096,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       } else {
          method_77(true);
          field_71[3] = 33;
-         method_75(field_71[3]);
+         setAudioVolume(field_71[3]);
          if (field_226 == 5 || field_226 == 6) {
             method_69(0, true);
             return;
@@ -5301,7 +5300,7 @@ public class GameEngine extends GameCanvas implements Runnable {
                }
 
                if (field_229) {
-                  method_75(field_71[3]);
+                  setAudioVolume(field_71[3]);
                }
 
                method_69(0, true);
