@@ -7,6 +7,12 @@ import java.awt.image.BufferedImage;
 
 public class GameCanvas {
 
+    //GAME RESOLUTION
+    /**
+     * Internal game resolution
+     * change house.width or house.height
+     * Default 240x320
+     */
     private final int width = Integer.getInteger("house.width", 240);
     private final int height = Integer.getInteger("house.height", 320);
 
@@ -51,7 +57,7 @@ public class GameCanvas {
         };
 
         panel.setBackground(Color.BLACK);
-        panel.setPreferredSize(new Dimension(width * 2, height * 2));
+        panel.setPreferredSize(new Dimension(width, height));
         panel.setFocusable(true);
 
         panel.addMouseListener(new MouseAdapter() {
