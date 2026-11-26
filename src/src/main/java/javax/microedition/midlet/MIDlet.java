@@ -1,5 +1,10 @@
 package javax.microedition.midlet;
 
+/**
+ * Defines the original Java ME application lifecycle contract.
+ * Preserves the game's startup, suspension, and shutdown
+ * behavior within the Java SE compatibility layer.
+*/
 public abstract class MIDlet {
 
     public abstract void startApp();

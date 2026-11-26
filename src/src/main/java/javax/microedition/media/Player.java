@@ -2,6 +2,10 @@ package javax.microedition.media;
 
 import javax.sound.midi.*;
 
+/**
+ * Java ME media player compatibility adapter for Java SE.
+ * Handles MIDI audio playback, looping, and resource management.
+*/
 public final class Player {
 
     private final Sequence sequence;
