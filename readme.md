@@ -6,7 +6,7 @@
 
 <p align="center">
   <img alt="Java 17 and 21" src="https://img.shields.io/badge/Java-17%20%7C%2021-orange">
-  <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-blue">
+  <img alt="Version 0.2.1" src="https://img.shields.io/badge/version-0.1.0-blue">
   <img alt="Status" src="https://img.shields.io/badge/status-under%20development-yellow">
 </p>
 
