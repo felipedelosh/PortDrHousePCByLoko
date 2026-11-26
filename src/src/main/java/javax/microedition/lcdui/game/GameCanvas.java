@@ -73,7 +73,7 @@ public class GameCanvas {
             public void focusLost(FocusEvent e) {
 
                 for (int k : new int[]{
-                    -1, -2, -3, -4, -5, -6, -7,
+                    -1, -2, -3, -4, -5, -6, -7, -8, -9,
                     48, 49, 50, 51, 52, 53, 54,
                     55, 56, 57, 35, 42
                 }) {
@@ -106,6 +106,8 @@ public class GameCanvas {
             case KeyEvent.VK_ENTER, KeyEvent.VK_SPACE -> -5;
             case KeyEvent.VK_F1 -> -6;
             case KeyEvent.VK_F2, KeyEvent.VK_ESCAPE -> -7;
+            case KeyEvent.VK_F5 -> -8;
+            case KeyEvent.VK_F6 -> -9;
             default -> e.getKeyChar();
         };
     }
