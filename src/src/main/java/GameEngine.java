@@ -89,8 +89,20 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: c boolean
    public static boolean field_62 = true;
    //Audio
-   private static final String[] audioResourcePaths = new String[]{"audio/s0.mid", "audio/s1.mid", "audio/s2.mid", "audio/s3.mid", "audio/s4.mid"};
-   private static final String[] audioMimeTypes = new String[]{"audio/midi", "audio/midi", "audio/midi", "audio/midi", "audio/midi"};
+   private static final String[] audioResourcePaths = new String[]{
+      "audio/s0.mid",
+      "audio/s1.mid",
+      "audio/s2.mid",
+      "audio/s3.mid",
+      "audio/s4.mid"
+   };
+   private static final String[] audioMimeTypes = new String[]{
+      "audio/midi",
+      "audio/midi",
+      "audio/midi",
+      "audio/midi",
+      "audio/midi"
+   };
    private static boolean audioEnabled;
    private static int audioVolume;
    private static int currentAudioId;
