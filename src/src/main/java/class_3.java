@@ -1219,8 +1219,7 @@ public class class_3 extends GameCanvas implements Runnable {
       pendingKeysMask = pendingKeysMask & heldKeysMask;
    }
 
-   // $VF: renamed from: a (int) boolean
-   public static boolean method_21(int var0) {
+   public static boolean isKeyActive(int var0) {
       return (activeKeysMask & var0) != 0;
    }
 
@@ -5877,7 +5876,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: f () int
    private static int method_269() {
-      if (method_21(1) && field_273 > 0) {
+      if (isKeyActive(1) && field_273 > 0) {
          field_273--;
          if (field_273 == 0) {
             field_276 |= 1;
@@ -5886,7 +5885,7 @@ public class class_3 extends GameCanvas implements Runnable {
          }
 
          field_276 |= 2;
-      } else if (method_21(2) && field_273 + field_281 < field_280) {
+      } else if (isKeyActive(2) && field_273 + field_281 < field_280) {
          field_273++;
          if (field_273 == 1) {
             field_276 |= 1;
@@ -7398,7 +7397,7 @@ public class class_3 extends GameCanvas implements Runnable {
       boolean var0 = false;
 
       for (int var1 = 0; var1 < field_340.length; var1 += 3) {
-         if (method_21(field_340[var1]) && method_21(field_340[var1 + 1])) {
+         if (isKeyActive(field_340[var1]) && isKeyActive(field_340[var1 + 1])) {
             var0 = true;
             method_351(field_340[var1 + 2]);
             break;
@@ -8662,15 +8661,15 @@ public class class_3 extends GameCanvas implements Runnable {
       } else if (method_404()) {
          field_418 = 4;
       } else {
-         if (method_21(1)) {
+         if (isKeyActive(1)) {
             field_421 = Math.max(0, field_421 - 4);
-         } else if (method_21(2)) {
+         } else if (isKeyActive(2)) {
             field_421 = Math.min(208, field_421 + 4);
          }
 
-         if (method_21(4)) {
+         if (isKeyActive(4)) {
             field_420 = Math.max(0, field_420 - 4);
-         } else if (method_21(8)) {
+         } else if (isKeyActive(8)) {
             field_420 = Math.min(176, field_420 + 4);
          }
 
