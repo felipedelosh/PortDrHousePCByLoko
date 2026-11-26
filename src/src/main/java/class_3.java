@@ -14,7 +14,6 @@ import javax.microedition.media.Player;
 import javax.microedition.media.control.VolumeControl;
 import javax.microedition.rms.RecordStore;
 
-// $VF: renamed from: c
 public class class_3 extends GameCanvas implements Runnable {
    // $VF: renamed from: a java.lang.String[]
    public static final String[] field_23 = new String[]{"pack", "personajes", "f", "fa", "carap", "carta"};
