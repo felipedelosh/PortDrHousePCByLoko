@@ -512,9 +512,8 @@ public class class_3 extends GameCanvas implements Runnable {
    private static boolean field_229;
    // $VF: renamed from: aW int
    private static int field_230 = -1;
-   // $VF: renamed from: x int[]
-   private static int[] field_231 = new int[]{28, 29};
-   // $VF: renamed from: y int[]
+   //INTRO IMG
+   private static int[] splashImageIds = new int[]{28, 29};
    private static int[] field_232 = new int[]{16777215, 16777215};
    // $VF: renamed from: aX int
    private static int field_233;
@@ -5297,7 +5296,7 @@ public class class_3 extends GameCanvas implements Runnable {
    // $VF: renamed from: Z () void
    private static void method_231() {
       field_233 = 0;
-      field_235 = method_90(field_231[0]);
+      field_235 = method_90(splashImageIds[0]);
       field_234 = 32;
       field_226 = 3;
    }
@@ -5306,12 +5305,12 @@ public class class_3 extends GameCanvas implements Runnable {
    private static void method_232() {
       if (hasNewKeyPress() || --field_234 <= 0) {
          field_233++;
-         if (field_233 == field_231.length) {
+         if (field_233 == splashImageIds.length) {
             field_235 = null;
             method_234();
          } else {
             field_235 = null;
-            field_235 = method_90(field_231[field_233]);
+            field_235 = method_90(splashImageIds[field_233]);
             field_234 = 32;
          }
       }
