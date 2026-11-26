@@ -72,9 +72,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static volatile int heldKeysMask;
    private static volatile int newlyPressedKeysMask;
    private static volatile int pendingKeysMask;
-   // PC VOLUME CONTROLS
-   private static final int KEY_VOLUME_DOWN = 1 << 19;
-   private static final int KEY_VOLUME_UP = 1 << 20;
    // $VF: renamed from: b int[]
    public static final int[] field_55 = new int[]{0, 90, 24576, 24666, 8192, 8282, 16384, 16474};
    // $VF: renamed from: c int[]
@@ -95,6 +92,7 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static final String[] field_63 = new String[]{"/s0.bin", "/s1.bin", "/s2.bin", "/s3.bin", "/s4.bin"};
    // $VF: renamed from: f java.lang.String[]
    private static final String[] field_64 = new String[]{"audio/midi", "audio/midi", "audio/midi", "audio/midi", "audio/midi"};
+   // $VF: renamed from: f boolean
    private static boolean field_65;
    // $VF: renamed from: K int
    private static int audioVolume;
@@ -106,10 +104,7 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static Player field_69;
    // $VF: renamed from: a javax.microedition.rms.RecordStore
    public static RecordStore field_70;
-   /**
-    * 3 = Audio VOL
-    * 
-   */
+   // $VF: renamed from: d byte[]
    public static byte[] field_71;
    // $VF: renamed from: d int[]
    public static final int[] field_72 = new int[]{0, 1, 1, 1, 0, -1, -1, -1, 0, 0};
@@ -1022,7 +1017,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: x () void
    private static final void method_15() {
       updateInputState();
-      processPcControls();
       method_228();
    }
 
@@ -1066,14 +1060,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    }
 
    private final int mapKeyToInputMask(int keyCode) {
-      if (keyCode == -8) {
-         return KEY_VOLUME_DOWN;
-      }
-
-      if (keyCode == -9) {
-         return KEY_VOLUME_UP;
-      }
-
       if (keyCode == -6) {
          return 131072;
       }
@@ -8782,16 +8768,6 @@ public class GameEngine extends GameCanvas implements Runnable {
          if (field_426 + 176 > field_222) {
             method_400(3, 0, field_222 - (var9 >> 1), field_225);
          }
-      }
-   }
-
-   private static void processPcControls() {
-      if (isKeyJustPressed(KEY_VOLUME_DOWN)) {
-         setAudioVolume(audioVolume - GameConfiguration.VOLUME_STEP);
-      }
-
-      if (isKeyJustPressed(KEY_VOLUME_UP)) {
-         setAudioVolume(audioVolume + GameConfiguration.VOLUME_STEP);
       }
    }
 
