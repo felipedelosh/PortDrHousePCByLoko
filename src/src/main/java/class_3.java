@@ -335,8 +335,6 @@ public class class_3 extends GameCanvas implements Runnable {
       "fox.png",
       "logocom2.png"
    };
-   // $VF: renamed from: a a
-   private static class_2 field_170;
    // $VF: renamed from: t byte[]
    private static byte[] field_171;
    // $VF: renamed from: u byte[]
@@ -5280,7 +5278,6 @@ public class class_3 extends GameCanvas implements Runnable {
          method_9(field_71[1]);
       }
 
-      field_170 = new class_2(field_28);
       method_98();
       method_158(64);
       method_100(field_222, field_223);
@@ -6092,7 +6089,6 @@ public class class_3 extends GameCanvas implements Runnable {
             int var1;
             if ((var1 = method_269()) == 0) {
                method_70();
-               field_170.method_3();
                return;
             }
 
@@ -6104,7 +6100,6 @@ public class class_3 extends GameCanvas implements Runnable {
             int var0;
             if ((var0 = method_269()) == 0) {
                field_290 = 0;
-               field_170.method_5();
                return;
             }
 
@@ -6189,10 +6184,6 @@ public class class_3 extends GameCanvas implements Runnable {
       method_256(method_244(0), 0);
       method_256(method_244(3), 3);
       method_256(method_244(6), 6);
-      if (field_170.method_1() | field_170.method_2()) {
-         method_256(method_244(19), 14);
-      }
-
       method_256(method_244(14), 7);
       method_292(var0);
    }
@@ -6221,14 +6212,6 @@ public class class_3 extends GameCanvas implements Runnable {
    private static void method_286() {
       method_243();
       method_255();
-      if (field_170.method_1()) {
-         method_256(method_244(19), 16);
-      }
-
-      if (field_170.method_2()) {
-         method_256(method_244(18), 15);
-      }
-
       method_256(method_244(13), 8);
       method_292(0);
    }
