@@ -4,17 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import configuration.GameConfiguration;
 
 public class GameCanvas {
 
-    //GAME RESOLUTION
-    /**
-     * Internal game resolution
-     * change house.width or house.height
-     * Default 240x320
-     */
-    private final int width = Integer.getInteger("house.width", 240);
-    private final int height = Integer.getInteger("house.height", 320);
+    // GAME RESOLUTION
+    private final int width = GameConfiguration.SELECTED_RESOLUTION.getWidth();
+    private final int height = GameConfiguration.SELECTED_RESOLUTION.getHeight();
 
     private final BufferedImage buffer = new BufferedImage(
         width, height, BufferedImage.TYPE_INT_RGB
@@ -57,7 +53,10 @@ public class GameCanvas {
         };
 
         panel.setBackground(Color.BLACK);
-        panel.setPreferredSize(new Dimension(width, height));
+        panel.setPreferredSize(new Dimension(
+            width * GameConfiguration.WINDOW_SCALE,
+            height * GameConfiguration.WINDOW_SCALE
+        ));
         panel.setFocusable(true);
 
         panel.addMouseListener(new MouseAdapter() {
