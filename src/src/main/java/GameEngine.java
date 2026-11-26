@@ -20,12 +20,9 @@ public class GameEngine extends GameCanvas implements Runnable {
    public static final String[] field_23 = new String[]{"pack", "personajes", "f", "fa", "carap", "carta"};
    // $VF: renamed from: a byte[]
    public static final byte[] field_24 = new byte[]{0, 0, 2, 0, 0, 0};
-   // $VF: renamed from: B int
-   private static int field_25;
-   // $VF: renamed from: c java.lang.String[]
-   private static String[] field_26;
-   // $VF: renamed from: d java.lang.String[]
-   private static String[] field_27;
+   private static int selectedLanguageIndex;
+   private static String[] languageCodes;
+   private static String[] languageNames;
    // $VF: renamed from: a Mapp
    public static Mapp field_28;
    // $VF: renamed from: a java.lang.Thread
@@ -906,15 +903,13 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: h int[]
    public static final int[] field_428 = new int[]{15, 13, 19, 20, 17, 18};
 
-   // $VF: renamed from: u () void
-   private static void method_8() {
-      field_26 = GameConfiguration.LANGUAGE_CODES.clone();
-      field_27 = GameConfiguration.LANGUAGE_NAMES.clone();
+   private static void initializeLanguages() {
+      languageCodes = GameConfiguration.LANGUAGE_CODES.clone();
+      languageNames = GameConfiguration.LANGUAGE_NAMES.clone();
    }
 
-   // $VF: renamed from: p (int) void
-   private static void method_9(int var0) {
-      field_25 = var0;
+   private static void setSelectedLanguage(int languageIndex) {
+      selectedLanguageIndex = languageIndex;
    }
 
    public GameEngine(Mapp var1) {
@@ -926,7 +921,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_39 = new Random(System.currentTimeMillis());
       this.method_31();
       method_78();
-      method_8();
+      initializeLanguages();
       method_222();
       field_36 = System.currentTimeMillis();
       method_91();
@@ -2066,7 +2061,7 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: a (java.lang.String) void
    public static final void method_63(String var0) {
-      field_46 = method_84("/" + field_26[field_25] + "_" + var0 + ".tx");
+      field_46 = method_84("/" + languageCodes[selectedLanguageIndex] + "_" + var0 + ".tx");
       int var1 = 0;
 
       for (int var2 = 0; var2 < field_46.length; var2++) {
@@ -5216,7 +5211,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
 
       if (field_71[1] != -1) {
-         method_9(field_71[1]);
+         setSelectedLanguage(field_71[1]);
       }
 
       method_98();
@@ -5346,7 +5341,7 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: h () boolean
    private static boolean method_236() {
-      return field_26 == null || field_26.length <= 1;
+      return languageCodes == null || languageCodes.length <= 1;
    }
 
    // $VF: renamed from: ae () void
@@ -5363,10 +5358,10 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_243();
       method_255();
       if (!field_243) {
-         field_242 = new Object[field_27.length];
+         field_242 = new Object[languageNames.length];
 
-         for (int var0 = 0; var0 < field_27.length; var0++) {
-            field_242[var0] = method_57(field_27[var0]);
+         for (int var0 = 0; var0 < languageNames.length; var0++) {
+            field_242[var0] = method_57(languageNames[var0]);
          }
 
          field_243 = true;
@@ -6305,9 +6300,9 @@ public class GameEngine extends GameCanvas implements Runnable {
             method_238();
       }
 
-      if (var1 >= 32 && var1 < 32 + field_27.length) {
+      if (var1 >= 32 && var1 < 32 + languageNames.length) {
          field_71[1] = (byte)var0;
-         method_9(var0);
+         setSelectedLanguage(var0);
          method_63("b");
          if (field_226 == 4) {
             method_237();
