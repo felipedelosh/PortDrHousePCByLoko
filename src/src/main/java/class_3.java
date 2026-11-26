@@ -1129,8 +1129,7 @@ public class class_3 extends GameCanvas implements Runnable {
       }
    }
 
-   // $VF: renamed from: q (int) int
-   private final int method_19(int var1) {
+   private final int mapKeyToInputMask(int var1) {
       if (var1 == -6) {
          return 131072;
       }
@@ -1197,7 +1196,7 @@ public class class_3 extends GameCanvas implements Runnable {
    }
 
    public void keyPressed(int keyCode) {
-      if ((keyCode = this.method_19(keyCode)) != 0) {
+      if ((keyCode = this.mapKeyToInputMask(keyCode)) != 0) {
          if ((heldKeysMask & keyCode) == 0) {
             newlyPressedKeysMask |= keyCode;
          }
@@ -1208,7 +1207,7 @@ public class class_3 extends GameCanvas implements Runnable {
    }
 
    public void keyReleased(int keyCode) {
-      if ((keyCode = this.method_19(keyCode)) != 0) {
+      if ((keyCode = this.mapKeyToInputMask(keyCode)) != 0) {
          heldKeysMask &= ~keyCode;
       }
    }
