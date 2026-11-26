@@ -1129,16 +1129,16 @@ public class class_3 extends GameCanvas implements Runnable {
       }
    }
 
-   private final int mapKeyToInputMask(int var1) {
-      if (var1 == -6) {
+   private final int mapKeyToInputMask(int keyCode) {
+      if (keyCode == -6) {
          return 131072;
       }
 
-      if (var1 == -7) {
+      if (keyCode == -7) {
          return 262144;
       }
 
-      switch (this.getGameAction(var1)) {
+      switch (this.getGameAction(keyCode)) {
          case 1:
             return 1;
          case 2:
@@ -1147,7 +1147,7 @@ public class class_3 extends GameCanvas implements Runnable {
          case 4:
          case 7:
          default:
-            switch (var1) {
+            switch (keyCode) {
                case 35:
                   return 65536;
                case 36:
@@ -1219,12 +1219,12 @@ public class class_3 extends GameCanvas implements Runnable {
       pendingKeysMask = pendingKeysMask & heldKeysMask;
    }
 
-   public static boolean isKeyActive(int var0) {
-      return (activeKeysMask & var0) != 0;
+   public static boolean isKeyActive(int keyCode) {
+      return (activeKeysMask & keyCode) != 0;
    }
 
-   public static boolean isKeyJustPressed(int var0) {
-      return (justPressedKeysMask & var0) != 0;
+   public static boolean isKeyJustPressed(int keyCode) {
+      return (justPressedKeysMask & keyCode) != 0;
    }
 
    public static boolean hasNewKeyPress() {
