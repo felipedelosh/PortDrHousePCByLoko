@@ -110,6 +110,11 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static Player audioPlayer;
    private static boolean volumeControlSupported;
    private static int audioIdToResume = -1;
+   private static int audioOnMenuItemId;
+   private static int audioOffMenuItemId;
+   private static int highVolumeMenuItemId;
+   private static int mediumVolumeMenuItemId;
+   private static int lowVolumeMenuItemId;
    // $VF: renamed from: a javax.microedition.rms.RecordStore
    public static RecordStore field_70;
    // $VF: renamed from: d byte[]
@@ -628,16 +633,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static int field_289;
    // $VF: renamed from: bJ int
    private static int field_290;
-   // $VF: renamed from: bK int
-   private static int field_291;
-   // $VF: renamed from: bL int
-   private static int field_292;
-   // $VF: renamed from: bM int
-   private static int field_293;
-   // $VF: renamed from: bN int
-   private static int field_294;
-   // $VF: renamed from: bO int
-   private static int field_295;
    // $VF: renamed from: bP int
    private static int field_296;
    // $VF: renamed from: bQ int
@@ -5019,8 +5014,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_226 = 0;
    }
 
-   // $VF: renamed from: d (boolean) void
-   private static void method_223(boolean var0) {
+   private static void handleAudioVisibilityChange(boolean var0) {
       if (isAudioEnabled()) {
          if (var0) {
             if (audioIdToResume >= 0) {
@@ -5039,17 +5033,15 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
    }
 
-   // $VF: renamed from: V () void
-   private static void method_224() {
+   private static void changeAudioSetting() {
       if (volumeControlSupported) {
-         method_226();
+         cycleAudioVolume();
       } else {
-         method_225();
+         toggleAudio();
       }
    }
 
-   // $VF: renamed from: W () void
-   private static void method_225() {
+   private static void toggleAudio() {
       if (isAudioEnabled()) {
          setAudioEnabled(false);
          stopAudio();
@@ -5065,8 +5057,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
    }
 
-   // $VF: renamed from: X () void
-   private static void method_226() {
+   private static void cycleAudioVolume() {
       if (isAudioEnabled()) {
          if (field_71[3] == 33) {
             field_71[3] = 66;
@@ -5108,13 +5099,13 @@ public class GameEngine extends GameCanvas implements Runnable {
             method_331();
          }
 
-         method_223(false);
+         handleAudioVisibilityChange(false);
          field_227 = field_226;
          field_226 = 1;
       } else if (field_227 != 1) {
          field_226 = field_227;
          field_227 = 1;
-         method_223(true);
+         handleAudioVisibilityChange(true);
          if (field_226 == 2) {
             method_307();
          }
@@ -6307,7 +6298,7 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: aG () void
    private static void method_294() {
-      method_224();
+      changeAudioSetting();
       if (volumeControlSupported) {
          method_296();
       } else {
@@ -6318,14 +6309,14 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: aH () void
    private static void method_295() {
       if (isAudioEnabled()) {
-         field_256[0] = field_291;
-         field_251[field_291] = field_262;
-         method_245(field_292);
+         field_256[0] = audioOnMenuItemId;
+         field_251[audioOnMenuItemId] = field_262;
+         method_245(audioOffMenuItemId);
          method_259();
       } else {
-         field_256[0] = field_292;
-         field_251[field_292] = field_262;
-         method_245(field_291);
+         field_256[0] = audioOffMenuItemId;
+         field_251[audioOffMenuItemId] = field_262;
+         method_245(audioOnMenuItemId);
          method_259();
       }
    }
@@ -6334,30 +6325,30 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static void method_296() {
       if (isAudioEnabled()) {
          if (field_71[3] == 33) {
-            field_256[0] = field_295;
-            field_251[field_295] = field_262;
-            method_245(field_293);
-            method_245(field_294);
+            field_256[0] = lowVolumeMenuItemId;
+            field_251[lowVolumeMenuItemId] = field_262;
+            method_245(highVolumeMenuItemId);
+            method_245(mediumVolumeMenuItemId);
          } else if (field_71[3] == 66) {
-            field_256[0] = field_294;
-            field_251[field_294] = field_262;
-            method_245(field_293);
-            method_245(field_295);
+            field_256[0] = mediumVolumeMenuItemId;
+            field_251[mediumVolumeMenuItemId] = field_262;
+            method_245(highVolumeMenuItemId);
+            method_245(lowVolumeMenuItemId);
          } else {
-            field_256[0] = field_293;
-            field_251[field_293] = field_262;
-            method_245(field_294);
-            method_245(field_295);
+            field_256[0] = highVolumeMenuItemId;
+            field_251[highVolumeMenuItemId] = field_262;
+            method_245(mediumVolumeMenuItemId);
+            method_245(lowVolumeMenuItemId);
          }
 
-         method_245(field_292);
+         method_245(audioOffMenuItemId);
          method_259();
       } else {
-         field_256[0] = field_292;
-         field_251[field_292] = field_262;
-         method_245(field_293);
-         method_245(field_294);
-         method_245(field_295);
+         field_256[0] = audioOffMenuItemId;
+         field_251[audioOffMenuItemId] = field_262;
+         method_245(highVolumeMenuItemId);
+         method_245(mediumVolumeMenuItemId);
+         method_245(lowVolumeMenuItemId);
          method_259();
       }
    }
@@ -7077,32 +7068,32 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: a (int, int, int, int, int, int, boolean) void
    private static void method_337(int var0, int var1, int var2, int var3, int var4, int var5, boolean var6) {
       method_243();
-      field_292 = method_244(var0);
-      field_293 = method_244(var3);
-      field_294 = method_244(var2);
-      field_295 = method_244(var1);
+      audioOffMenuItemId = method_244(var0);
+      highVolumeMenuItemId = method_244(var3);
+      mediumVolumeMenuItemId = method_244(var2);
+      lowVolumeMenuItemId = method_244(var1);
       method_255();
       if (isAudioEnabled()) {
          if (field_71[3] == 33) {
-            method_256(field_295, 9);
-            method_245(field_293);
-            method_245(field_294);
+            method_256(lowVolumeMenuItemId, 9);
+            method_245(highVolumeMenuItemId);
+            method_245(mediumVolumeMenuItemId);
          } else if (field_71[3] == 66) {
-            method_256(field_294, 9);
-            method_245(field_293);
-            method_245(field_295);
+            method_256(mediumVolumeMenuItemId, 9);
+            method_245(highVolumeMenuItemId);
+            method_245(lowVolumeMenuItemId);
          } else {
-            method_256(field_293, 9);
-            method_245(field_294);
-            method_245(field_295);
+            method_256(highVolumeMenuItemId, 9);
+            method_245(mediumVolumeMenuItemId);
+            method_245(lowVolumeMenuItemId);
          }
 
-         method_245(field_292);
+         method_245(audioOffMenuItemId);
       } else {
-         method_256(field_292, 9);
-         method_245(field_293);
-         method_245(field_294);
-         method_245(field_295);
+         method_256(audioOffMenuItemId, 9);
+         method_245(highVolumeMenuItemId);
+         method_245(mediumVolumeMenuItemId);
+         method_245(lowVolumeMenuItemId);
       }
 
       if (var6) {
@@ -7115,15 +7106,15 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: b (int, int, int, int, boolean) void
    private static void method_338(int var0, int var1, int var2, int var3, boolean var4) {
       method_243();
-      field_291 = method_244(var0);
-      field_292 = method_244(var1);
+      audioOnMenuItemId = method_244(var0);
+      audioOffMenuItemId = method_244(var1);
       method_255();
       if (isAudioEnabled()) {
-         method_256(field_291, 9);
-         method_245(field_292);
+         method_256(audioOnMenuItemId, 9);
+         method_245(audioOffMenuItemId);
       } else {
-         method_256(field_292, 9);
-         method_245(field_291);
+         method_256(audioOffMenuItemId, 9);
+         method_245(audioOnMenuItemId);
       }
 
       if (var4) {
