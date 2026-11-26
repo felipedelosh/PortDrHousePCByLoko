@@ -20,9 +20,6 @@ public final class GameConfiguration {
     public static final String[] LANGUAGE_CODES = {"en", "es"};
     public static final String[] LANGUAGE_NAMES = {"English", "Español"};
 
-    // AUDIO CONFIGURATION
-    public static final int VOLUME_STEP = 10;
-
     // AVAILABLE RESOLUTIONS
     public enum Resolution {
 
