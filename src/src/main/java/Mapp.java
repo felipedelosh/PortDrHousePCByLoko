@@ -2,7 +2,7 @@ import javax.microedition.lcdui.Display;
 import javax.microedition.midlet.MIDlet;
 
 public class Mapp extends MIDlet {
-   private class_3 field_429 = null;
+   private GameEngine field_429 = null;
    private Display field_430;
    private boolean field_431 = false;
 
@@ -12,19 +12,22 @@ public class Mapp extends MIDlet {
 
    public final void startApp() {
       if (!this.field_431) {
-         this.field_429 = new class_3(this);
+         this.field_429 = new GameEngine(this);
          this.field_430.setCurrent(this.field_429);
          this.field_431 = true;
       }
    }
 
-   @Override public void requestExit() { class_3.field_30 = false; }
+   @Override 
+   public void requestExit() {
+      GameEngine.field_30 = false;
+   }
 
    public final void pauseApp() {
    }
 
    public final void destroyApp(boolean var1) {
-      class_3.method_17();
+      GameEngine.method_17();
    }
 
    public final void method_409() {

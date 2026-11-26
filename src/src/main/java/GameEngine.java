@@ -14,7 +14,7 @@ import javax.microedition.media.Player;
 import javax.microedition.media.control.VolumeControl;
 import javax.microedition.rms.RecordStore;
 
-public class class_3 extends GameCanvas implements Runnable {
+public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: a java.lang.String[]
    public static final String[] field_23 = new String[]{"pack", "personajes", "f", "fa", "carap", "carta"};
    // $VF: renamed from: a byte[]
@@ -976,7 +976,7 @@ public class class_3 extends GameCanvas implements Runnable {
       return var1.toString();
    }
 
-   public class_3(Mapp var1) {
+   public GameEngine(Mapp var1) {
       super(false);
       this.setFullScreenMode(true);
       field_28 = var1;
@@ -2194,7 +2194,7 @@ public class class_3 extends GameCanvas implements Runnable {
       }
 
       try {
-         field_69 = Manager.createPlayer(class_3.class.getResourceAsStream(field_63[var0]), field_64[var0]);
+         field_69 = Manager.createPlayer(GameEngine.class.getResourceAsStream(field_63[var0]), field_64[var0]);
       } catch (Exception var2) {
       }
    }
@@ -2382,7 +2382,7 @@ public class class_3 extends GameCanvas implements Runnable {
       byte[] var3 = null;
 
       try {
-         InputStream var2 = class_3.class.getResourceAsStream(var0);
+         InputStream var2 = GameEngine.class.getResourceAsStream(var0);
          ByteArrayOutputStream var1 = new ByteArrayOutputStream();
 
          for (int var4 = var2.read(); var4 >= 0; var4 = var2.read()) {
@@ -2435,7 +2435,7 @@ public class class_3 extends GameCanvas implements Runnable {
    // $VF: renamed from: a (int) java.io.InputStream
    public static final InputStream method_88(int var0) {
       try {
-         return class_3.class.getResourceAsStream("/" + field_169[var0]);
+         return GameEngine.class.getResourceAsStream("/" + field_169[var0]);
       } catch (Exception var2) {
          return null;
       }
@@ -6479,7 +6479,7 @@ public class class_3 extends GameCanvas implements Runnable {
       method_275();
       field_226 = 9;
       final int task = field_296;
-      field_298 = new Thread(() -> { if (task == 0) class_3.method_305(); });
+      field_298 = new Thread(() -> { if (task == 0) GameEngine.method_305(); });
       field_298.setPriority(1);
       field_298.start();
    }
