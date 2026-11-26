@@ -6503,7 +6503,7 @@ public class class_3 extends GameCanvas implements Runnable {
       method_275();
       field_226 = 9;
       final int task = field_296;
-      field_298 = new Thread(() -> { if (task == 0) class_3.method_408(); });
+      field_298 = new Thread(() -> { if (task == 0) class_3.method_305(); });
       field_298.setPriority(1);
       field_298.start();
    }
@@ -8858,11 +8858,6 @@ public class class_3 extends GameCanvas implements Runnable {
             method_400(3, 0, field_222 - (var9 >> 1), field_225);
          }
       }
-   }
-
-   // $VF: renamed from: t () void
-   public static void method_408() {
-      method_305();
    }
 
    static {
