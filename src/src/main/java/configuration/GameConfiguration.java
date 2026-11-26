@@ -4,7 +4,10 @@ package configuration;
  * FelipedelosH
  * 2026
  * 
- * GAME CONFIG DISPLAY
+ * GAME CONFIG 
+ * DISPLAY
+ * LAN
+ * Audio
  */
 public final class GameConfiguration {
 
