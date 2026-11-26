@@ -1,2 +1,0 @@
-Lang-Codes: en,es
-Lang-Names: English,Espa00f1ol

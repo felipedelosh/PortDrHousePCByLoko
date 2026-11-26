@@ -13,6 +13,7 @@ import javax.microedition.media.Manager;
 import javax.microedition.media.Player;
 import javax.microedition.media.control.VolumeControl;
 import javax.microedition.rms.RecordStore;
+import configuration.GameConfiguration;
 
 public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: a java.lang.String[]
@@ -907,73 +908,13 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: u () void
    private static void method_8() {
-      String var0 = field_28.getAppProperty("Lang-Codes");
-      String var1 = field_28.getAppProperty("Lang-Names");
-      if (var0 != null) {
-         field_26 = method_10(var0);
-      }
-
-      if (var1 != null) {
-         field_27 = method_10(var1);
-      }
+      field_26 = GameConfiguration.LANGUAGE_CODES.clone();
+      field_27 = GameConfiguration.LANGUAGE_NAMES.clone();
    }
 
    // $VF: renamed from: p (int) void
    private static void method_9(int var0) {
       field_25 = var0;
-   }
-
-   // $VF: renamed from: a (java.lang.String) java.lang.String[]
-   private static String[] method_10(String var0) {
-      int var1 = 1;
-
-      for (int var2 = 0; var2 < var0.length(); var2++) {
-         if (var0.charAt(var2) == ',') {
-            var1++;
-         }
-      }
-
-      String[] var6 = new String[var1];
-      int var3 = 0;
-      int var4 = 0;
-
-      for (int var5 = 0; var5 < var0.length(); var5++) {
-         if (var0.charAt(var5) == ',') {
-            var6[var3] = method_11(var0.substring(var4, var5));
-            var3++;
-            var4 = var5 + 1;
-         }
-      }
-
-      if (var0.length() != var4) {
-         var6[var3] = method_11(var0.substring(var4, var0.length()));
-      }
-
-      return var6;
-   }
-
-   // $VF: renamed from: a (java.lang.String) java.lang.String
-   private static String method_11(String var0) {
-      StringBuffer var1 = new StringBuffer();
-      int var3 = 0;
-
-      while (var3 < var0.length()) {
-         if (var0.charAt(var3) == '0' && var0.length() - var3 >= 4) {
-            int var4 = 0;
-
-            for (int var5 = 0; var5 < 4; var3++) {
-               var4 = var4 * 16 + Character.digit(var0.charAt(var3), 16);
-               var5++;
-            }
-
-            var1.append((char)var4);
-         } else {
-            var1.append(var0.charAt(var3));
-            var3++;
-         }
-      }
-
-      return var1.toString();
    }
 
    public GameEngine(Mapp var1) {
