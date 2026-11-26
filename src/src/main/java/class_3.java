@@ -512,13 +512,11 @@ public class class_3 extends GameCanvas implements Runnable {
    private static boolean field_229;
    // $VF: renamed from: aW int
    private static int field_230 = -1;
-   //INTRO IMG
-   private static int[] splashImageIds = new int[]{28, 29};
-   private static int[] field_232 = new int[]{16777215, 16777215};
-   // $VF: renamed from: aX int
-   private static int field_233;
-   // $VF: renamed from: aY int
-   private static int field_234;
+   //INTRO IMGs
+   private static int[] splashImageIds = new int[]{28, 29}; //Id images
+   private static int[] splashBackgroundColors = new int[]{16777215, 16777215}; //IMG color
+   private static int currentSplashIndex;
+   private static int splashRemainingTicks; //Duration
    // $VF: renamed from: c javax.microedition.lcdui.Image
    private static Image field_235;
    // $VF: renamed from: d javax.microedition.lcdui.Image
@@ -5209,7 +5207,7 @@ public class class_3 extends GameCanvas implements Runnable {
                method_306();
                return;
             case 3:
-               method_232();
+               updateSplashScreens();
                return;
             case 4:
                method_235();
@@ -5241,7 +5239,7 @@ public class class_3 extends GameCanvas implements Runnable {
             method_308();
             break;
          case 3:
-            method_233();
+            renderSplashScreen();
             break;
          case 4:
             method_239();
@@ -5290,35 +5288,32 @@ public class class_3 extends GameCanvas implements Runnable {
       method_104(7);
       method_103(3 * field_92);
       field_229 = method_74(3);
-      method_231();
+      initializeSplashScreens();
    }
 
-   // $VF: renamed from: Z () void
-   private static void method_231() {
-      field_233 = 0;
+   private static void initializeSplashScreens() {
+      currentSplashIndex = 0;
       field_235 = method_90(splashImageIds[0]);
-      field_234 = 32;
+      splashRemainingTicks = 32;
       field_226 = 3;
    }
 
-   // $VF: renamed from: aa () void
-   private static void method_232() {
-      if (hasNewKeyPress() || --field_234 <= 0) {
-         field_233++;
-         if (field_233 == splashImageIds.length) {
+   private static void updateSplashScreens() {
+      if (hasNewKeyPress() || --splashRemainingTicks <= 0) {
+         currentSplashIndex++;
+         if (currentSplashIndex == splashImageIds.length) {
             field_235 = null;
             method_234();
          } else {
             field_235 = null;
-            field_235 = method_90(splashImageIds[field_233]);
-            field_234 = 32;
+            field_235 = method_90(splashImageIds[currentSplashIndex]);
+            splashRemainingTicks = 32;
          }
       }
    }
 
-   // $VF: renamed from: ab () void
-   private static void method_233() {
-      field_228.setColor(field_232[field_233]);
+   private static void renderSplashScreen() {
+      field_228.setColor(splashBackgroundColors[currentSplashIndex]);
       field_228.fillRect(0, 0, field_222, field_223);
       field_228.drawImage(field_235, field_222 >> 1, field_223 >> 1, 3);
    }
