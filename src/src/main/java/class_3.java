@@ -1016,7 +1016,7 @@ public class class_3 extends GameCanvas implements Runnable {
    // $VF: renamed from: v () void
    private static void method_13() {
       method_227(0);
-      method_24();
+      clearHeldKeys();
    }
 
    public final synchronized void showNotify() {
@@ -1223,18 +1223,15 @@ public class class_3 extends GameCanvas implements Runnable {
       return (activeKeysMask & var0) != 0;
    }
 
-   // $VF: renamed from: b (int) boolean
-   public static boolean method_22(int var0) {
+   public static boolean isKeyJustPressed(int var0) {
       return (justPressedKeysMask & var0) != 0;
    }
 
-   // $VF: renamed from: a () boolean
-   public static boolean method_23() {
+   public static boolean hasNewKeyPress() {
       return justPressedKeysMask != 0;
    }
 
-   // $VF: renamed from: c () void
-   public static void method_24() {
+   public static void clearHeldKeys() {
       heldKeysMask = 0;
    }
 
@@ -5307,7 +5304,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
    // $VF: renamed from: aa () void
    private static void method_232() {
-      if (method_23() || --field_234 <= 0) {
+      if (hasNewKeyPress() || --field_234 <= 0) {
          field_233++;
          if (field_233 == field_231.length) {
             field_235 = null;
@@ -5355,7 +5352,7 @@ public class class_3 extends GameCanvas implements Runnable {
    private static void method_235() {
       switch (field_237) {
          case 0:
-            if (method_23() || --field_239 <= 0) {
+            if (hasNewKeyPress() || --field_239 <= 0) {
                field_237++;
                return;
             }
@@ -5399,7 +5396,7 @@ public class class_3 extends GameCanvas implements Runnable {
                return;
             }
 
-            if (method_23()) {
+            if (hasNewKeyPress()) {
                field_238 = 0;
                return;
             }
@@ -5780,7 +5777,7 @@ public class class_3 extends GameCanvas implements Runnable {
          method_259();
       }
 
-      if (method_22(1)) {
+      if (isKeyJustPressed(1)) {
          if (field_261 == 0) {
             field_261 = method_257() - 1;
          } else {
@@ -5788,7 +5785,7 @@ public class class_3 extends GameCanvas implements Runnable {
          }
 
          method_259();
-      } else if (method_22(2)) {
+      } else if (isKeyJustPressed(2)) {
          if (field_261 == method_257() - 1) {
             field_261 = 0;
          } else {
@@ -5797,7 +5794,7 @@ public class class_3 extends GameCanvas implements Runnable {
 
          method_259();
       } else {
-         if (method_22(393232)) {
+         if (isKeyJustPressed(393232)) {
             if (!var0) {
                method_259();
             }
@@ -5894,22 +5891,22 @@ public class class_3 extends GameCanvas implements Runnable {
          }
 
          field_276 |= 2;
-      } else if (field_272 == 1 && field_277 == 1 && method_22(4)) {
+      } else if (field_272 == 1 && field_277 == 1 && isKeyJustPressed(4)) {
          method_268(0);
-      } else if (field_272 == 1 && field_277 == 0 && method_22(8)) {
+      } else if (field_272 == 1 && field_277 == 0 && isKeyJustPressed(8)) {
          method_268(1);
       } else {
-         if (field_272 == 1 && method_22(131072)) {
+         if (field_272 == 1 && isKeyJustPressed(131072)) {
             field_277 = 0;
             return field_277;
          }
 
-         if (field_272 == 1 && method_22(262144)) {
+         if (field_272 == 1 && isKeyJustPressed(262144)) {
             field_277 = 1;
             return field_277;
          }
 
-         if (method_22(393232)) {
+         if (isKeyJustPressed(393232)) {
             if (field_272 == 1) {
                return field_277;
             }
@@ -6652,7 +6649,7 @@ public class class_3 extends GameCanvas implements Runnable {
    private static void method_306() {
       if (field_321) {
          method_339();
-      } else if (!method_22(131072) && (field_347 >= 0 && (field_347 < 0 || field_348 == 4) || !method_22(262144))) {
+      } else if (!isKeyJustPressed(131072) && (field_347 >= 0 && (field_347 < 0 || field_348 == 4) || !isKeyJustPressed(262144))) {
          if (method_328()) {
             method_329();
          } else {
@@ -7407,7 +7404,7 @@ public class class_3 extends GameCanvas implements Runnable {
       if (!var0) {
          method_162(field_339, field_328, method_165(field_339), 0, true);
          int var3;
-         if (method_22(16) && (var3 = method_375(field_338)) >= 0) {
+         if (isKeyJustPressed(16) && (var3 = method_375(field_338)) >= 0) {
             method_310(var3);
          }
       }
@@ -7510,7 +7507,7 @@ public class class_3 extends GameCanvas implements Runnable {
             field_348 = 1;
             return;
          case 1:
-            if (method_22(18)) {
+            if (isKeyJustPressed(18)) {
                field_348 = 6;
                return;
             }
@@ -7559,7 +7556,7 @@ public class class_3 extends GameCanvas implements Runnable {
             field_348 = 2;
             return;
          case 2:
-            if (method_22(18)) {
+            if (isKeyJustPressed(18)) {
                field_348 = 6;
                return;
             }
@@ -7580,7 +7577,7 @@ public class class_3 extends GameCanvas implements Runnable {
             field_348 = 4;
             return;
          case 4:
-            if (method_22(262162)) {
+            if (isKeyJustPressed(262162)) {
                field_349 = field_350;
                field_351 = 0;
                field_352 = 14;
@@ -7589,7 +7586,7 @@ public class class_3 extends GameCanvas implements Runnable {
             }
             break;
          case 5:
-            if (method_22(18)) {
+            if (isKeyJustPressed(18)) {
                field_363 = null;
                method_323(field_346);
                field_362 = field_346;
@@ -7831,7 +7828,7 @@ public class class_3 extends GameCanvas implements Runnable {
             field_372 = 2;
             return;
          case 2:
-            if (method_22(1)) {
+            if (isKeyJustPressed(1)) {
                if (field_367 > 0) {
                   field_367--;
                   if (field_367 < field_374) {
@@ -7842,7 +7839,7 @@ public class class_3 extends GameCanvas implements Runnable {
                   return;
                }
                break;
-            } else if (method_22(2)) {
+            } else if (isKeyJustPressed(2)) {
                if (field_367 < field_194 - 1) {
                   field_367++;
                   if (field_367 - field_374 + 1 > field_373) {
@@ -7853,7 +7850,7 @@ public class class_3 extends GameCanvas implements Runnable {
                   return;
                }
                break;
-            } else if (!method_22(16)) {
+            } else if (!isKeyJustPressed(16)) {
                break;
             }
          case 3:
@@ -8414,7 +8411,7 @@ public class class_3 extends GameCanvas implements Runnable {
          field_398 = 3;
       } else if (field_392 <= 0) {
          for (int var0 = 0; var0 < 4; var0++) {
-            if (method_22(field_404[var0 * 2])) {
+            if (isKeyJustPressed(field_404[var0 * 2])) {
                method_397(field_404[var0 * 2 + 1]);
                return;
             }
@@ -8685,7 +8682,7 @@ public class class_3 extends GameCanvas implements Runnable {
             field_427 = field_223 - field_421;
          }
 
-         if (method_22(16)) {
+         if (isKeyJustPressed(16)) {
             if (field_419 >= 0) {
                int var0 = field_411[field_419 * 2] - field_412[field_419 * 2];
                int var1 = field_411[field_419 * 2 + 1] - field_412[field_419 * 2 + 1];
