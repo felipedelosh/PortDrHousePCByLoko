@@ -16,6 +16,10 @@ public final class GameConfiguration {
     public static final int WINDOW_SCALE = 1;
     public static final boolean FULLSCREEN = false;
 
+    // LANGUAGE CONFIGURATION
+    public static final String[] LANGUAGE_CODES = {"en", "es"};
+    public static final String[] LANGUAGE_NAMES = {"English", "Español"};
+
     // AVAILABLE RESOLUTIONS
     public enum Resolution {
 

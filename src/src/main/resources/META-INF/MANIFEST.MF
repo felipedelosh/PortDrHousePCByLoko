@@ -1,11 +1,2 @@
-Manifest-Version: 1.0
-MicroEdition-Configuration: CLDC-1.0
-MIDlet-Name: House
-MIDlet-Vendor: mobiground.com
-MIDlet-1: House, /i.png, Mapp
-MIDlet-Version: 1.01
-MicroEdition-Profile: MIDP-1.0
-MIDlet-Icon: /i.png
-MIDlet-Data-Size: 512
 Lang-Codes: en,es
 Lang-Names: English,Espa00f1ol
