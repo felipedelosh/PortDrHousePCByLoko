@@ -2,8 +2,8 @@
 
 Documentación técnica de ingeniería inversa del sistema de audio de House (2008), adaptado de Java ME a Java SE 17/21 en el proyecto `PortDrHousePCByLoko`.
 
-**Fecha de referencia:** 26 de noviembre de 2026.  
-**Versión analizada:** `java(20261126-193846).zip`, posterior a la reversión de los cambios experimentales de volumen y a la primera desofuscación semántica del audio.
+**Fecha de referencia:** 27 de noviembre de 2026 (nombre del ZIP).  
+**Versión analizada:** `java(20261127-025939).zip`. Inventario acordado de identificadores principales y variables internas de audio completado (77/77: 20 atributos, 28 métodos y 29 parámetros/locales, según el seguimiento del proyecto). Las constantes numéricas, dependencias compartidas y compatibilidad funcional quedan fuera de ese indicador.
 
 ## 1. Objetivo y alcance
 
@@ -22,7 +22,8 @@ La intención de los desarrolladores originales se reconstruye a partir del comp
 ```text
 PortDrHousePCByLoko/
 ├── Docs/
-│   ├── audioSystemGame.md
+│   ├── originalDevDoc/
+│   │   └── audioSystemGame.md
 │   └── savethegame.md
 └── src/
     └── src/main/
@@ -40,14 +41,15 @@ PortDrHousePCByLoko/
         │       │   └── control/VolumeControl.java
         │       └── rms/RecordStore.java
         └── resources/
-            ├── s0.bin
-            ├── s1.bin
-            ├── s2.bin
-            ├── s3.bin
-            └── s4.bin
+            └── audio/
+                ├── s0.mid
+                ├── s1.mid
+                ├── s2.mid
+                ├── s3.mid
+                └── s4.mid
 ```
 
-Las rutas corresponden a la estructura del repositorio. El ZIP de fuentes analizado contiene el subdirectorio `java/`; los recursos se verificaron por separado en `DoctorHousePC_0.1.0.zip`.
+Las rutas de recursos se deducen del código actual. El ZIP de fuentes analizado contiene el subdirectorio `java/`; las cabeceras y tamaños históricos se documentaron a partir de `DoctorHousePC_0.1.0.zip`, no de los archivos renombrados.
 
 ```mermaid
 flowchart TD
@@ -82,30 +84,30 @@ El motor conserva un solo reproductor estático. No existe un mezclador de músi
 
 ```java
 private static final String[] audioResourcePaths = new String[]{
-    "/s0.bin", "/s1.bin", "/s2.bin", "/s3.bin", "/s4.bin"
+    "audio/s0.mid", "audio/s1.mid", "audio/s2.mid", "audio/s3.mid", "audio/s4.mid"
 };
 private static final String[] audioMimeTypes = new String[]{
     "audio/midi", "audio/midi", "audio/midi", "audio/midi", "audio/midi"
 };
 ```
 
-La extensión `.bin` no representa el formato interno. Los cinco archivos del paquete de recursos consultado comienzan con `MThd`, cabecera de Standard MIDI File. No son MP3 ni WAV.
+Los recursos originales tenían extensión `.bin`; el código actual los referencia como `.mid` bajo `audio/`. Los cinco archivos del paquete de recursos consultado comienzan con `MThd`, cabecera de Standard MIDI File. No son MP3 ni WAV.
 
 | ID | Recurso | Tamaño (bytes) | Formato MIDI / pistas | Uso identificado en código |
 |---:|---|---:|---|---|
-| 0 | `s0.bin` | 4451 | 0 / 1 | Música de inicio y menú; repetitiva. |
-| 1 | `s1.bin` | 6727 | 0 / 1 | Música de partida y retorno de minijuegos; repetitiva. |
-| 2 | `s2.bin` | 4347 | 0 / 1 | Música alternativa solicitada por script; repetitiva. |
-| 3 | `s3.bin` | 184 | 1 / 2 | Respuesta correcta en el minijuego de secuencia; también se usa para probar soporte de volumen. |
-| 4 | `s4.bin` | 184 | 1 / 2 | Respuesta incorrecta en el mismo minijuego. |
+| 0 | `audio/s0.mid` | 4451 | 0 / 1 | Música de inicio y menú; repetitiva. |
+| 1 | `audio/s1.mid` | 6727 | 0 / 1 | Música de partida y retorno de minijuegos; repetitiva. |
+| 2 | `audio/s2.mid` | 4347 | 0 / 1 | Música alternativa solicitada por script; repetitiva. |
+| 3 | `audio/s3.mid` | 184 | 1 / 2 | Respuesta correcta en el minijuego de secuencia; también se usa para probar soporte de volumen. |
+| 4 | `audio/s4.mid` | 184 | 1 / 2 | Respuesta incorrecta en el mismo minijuego. |
 
 Los usos se derivan de las llamadas a `playAudio`, no de una escucha de las pistas. Todos los archivos examinados tienen división MIDI de 960 ticks por negra (`0x03C0`).
 
-Los IDs son índices de ambos arrays; deben mantenerse alineados. La ruta inicial `/` indica búsqueda desde la raíz del classpath mediante `GameEngine.class.getResourceAsStream(...)`.
+Los IDs son índices de ambos arrays; deben mantenerse alineados. Las rutas actuales no llevan `/` inicial: `GameEngine.class.getResourceAsStream(...)` las resuelve respecto al paquete de la clase, que actualmente está en el paquete por defecto. El ZIP reciente contiene fuentes, no los recursos renombrados; sus bytes actuales no se verificaron.
 
 ## 4. Atributos del motor y desofuscación completada
 
-Los nueve atributos siguientes están agrupados en la sección `//Audio` de `GameEngine.java` (líneas 92–100 de la versión de referencia).
+Los nueve atributos del reproductor forman parte de los 20 atributos agrupados en `//Audio` (líneas 92–123). Los otros once corresponden a elementos de menú y textos localizados (sección 8).
 
 | Nombre ofuscado | Nombre actual | Tipo | Semántica / inicialización |
 |---|---|---|---|
@@ -123,7 +125,7 @@ Todos son `private static`. `audioEnabled` representa permiso de reproducción, 
 
 ## 5. Métodos de reproducción desofuscados
 
-Sección de `GameEngine.java`, líneas 2118–2246.
+Sección de `GameEngine.java`, líneas 2119–2257.
 
 | Original | Actual | Responsabilidad |
 |---|---|---|
@@ -140,11 +142,11 @@ Sección de `GameEngine.java`, líneas 2118–2246.
 | `method_78` | `initializeAudio()` | Inicializa el ID actual en -1. |
 | `method_79` | `shutdownAudio()` | Delega en `stopAudio()`. |
 
-Los métodos `loadAudio`, `closeAudioPlayer`, `initializeAudio` y `shutdownAudio` son privados; los demás son públicos. Todos son estáticos. Los parámetros todavía se llaman `var0`, `var1`, etc. en el fuente actual.
+Los métodos `loadAudio`, `closeAudioPlayer`, `initializeAudio` y `shutdownAudio` son privados; los demás son públicos. Todos son estáticos. Los parámetros y variables locales de este bloque ya tienen nombres semánticos; las excepciones no utilizadas se llaman `ignored`.
 
 ### 5.1. Carga y reproducción
 
-`playAudio(int var0, boolean var1)` recibe el ID y el indicador de repetición. Si el ID es inválido o el sonido está deshabilitado no hace nada.
+`playAudio(int audioId, boolean loop)` recibe el ID y el indicador de repetición. Si el ID es inválido o el sonido está deshabilitado no hace nada.
 
 ```mermaid
 sequenceDiagram
@@ -176,15 +178,15 @@ sequenceDiagram
 Código actual (formato ajustado para lectura):
 
 ```java
-public static void setAudioVolume(int var0) {
+public static void setAudioVolume(int volume) {
     try {
-        audioVolume = Math.max(0, Math.min(var0, 100));
-        VolumeControl var1;
+        audioVolume = Math.max(0, Math.min(volume, 100));
+        VolumeControl volumeControl;
         if (currentAudioId >= 0 &&
-            (var1 = (VolumeControl) audioPlayer.getControl("VolumeControl")) != null) {
-            var1.setLevel(audioVolume);
+            (volumeControl = (VolumeControl) audioPlayer.getControl("VolumeControl")) != null) {
+            volumeControl.setLevel(audioVolume);
         }
-    } catch (Exception var2) {
+    } catch (Exception ignored) {
     }
 }
 ```
@@ -199,7 +201,7 @@ Este método no modifica `field_71[3]`, no activa el sonido, no inicia música y
 
 ## 6. Detección de soporte de volumen
 
-Durante `method_230()` (línea 5202):
+Durante `method_230()` (línea 5208):
 
 ```java
 volumeControlSupported = supportsVolumeControl(3);
@@ -213,29 +215,29 @@ La capacidad detectada determina si los menús muestran cuatro niveles o un inte
 
 ## 7. Configuración original del sonido
 
-Los siguientes métodos todavía conservan sus nombres ofuscados. Los nombres propuestos no se han aplicado.
+Los cuatro métodos específicos de configuración y visibilidad ya fueron renombrados. `method_227` sigue ofuscado porque pertenece al ciclo de vida general.
 
-| Método | Nombre candidato | Función |
+| Método | Nombre actual | Función |
 |---|---|---|
 | `method_223(boolean)` | `handleAudioVisibilityChange` | Detiene o reinicia música al cambiar la visibilidad. |
 | `method_224()` | `changeAudioSetting` | Selecciona el mecanismo de configuración según la capacidad. |
 | `method_225()` | `toggleAudio` | Alterna sonido habilitado/deshabilitado. |
 | `method_226()` | `cycleAudioVolume` | Recorre los niveles de volumen originales. |
-| `method_227(int)` | `handleVisibilityStateChange` | Gestiona el estado general del motor y delega en el audio. No es exclusivamente de audio. |
+| `method_227(int)` | Sin renombrar | Gestiona el estado general del motor y delega en el audio. No es exclusivamente de audio. |
 
 ### 7.1. Selección del mecanismo
 
 ```java
-private static void method_224() {
+private static void changeAudioSetting() {
     if (volumeControlSupported) {
-        method_226();
+        cycleAudioVolume();
     } else {
-        method_225();
+        toggleAudio();
     }
 }
 ```
 
-### 7.2. Modo compatible sin control de volumen (`method_225`)
+### 7.2. Modo compatible sin control de volumen (`toggleAudio`)
 
 Si el sonido está habilitado, llama a `setAudioEnabled(false)` y `stopAudio()`. Si estaba deshabilitado, llama a `setAudioEnabled(true)` y elige música según el estado del juego:
 
@@ -247,7 +249,7 @@ Si el sonido está habilitado, llama a `setAudioEnabled(false)` y `stopAudio()`.
 
 Este método **no escribe** `field_71[3]`. En consecuencia, no garantiza que el estado ON/OFF elegido en el menú sin control de volumen quede reflejado en el byte persistente. No confundirlo con el ciclo de volumen.
 
-### 7.3. Modo original con control de volumen (`method_226`)
+### 7.3. Modo original con control de volumen (`cycleAudioVolume`)
 
 El sistema admite cuatro niveles exactos:
 
@@ -279,7 +281,7 @@ Los valores intermedios (por ejemplo 46) no forman parte del ciclo original. Int
 
 ### 8.1. Variables relacionadas
 
-| Identificador | Nombre candidato | Responsabilidad |
+| Identificador | Nombre actual | Responsabilidad |
 |---|---|---|
 | `field_291` | `audioOnMenuItemId` | Identificador del elemento ON. |
 | `field_292` | `audioOffMenuItemId` | Identificador del elemento OFF/silencio. |
@@ -292,52 +294,87 @@ Los valores intermedios (por ejemplo 46) no forman parte del ciclo original. Int
 | `field_226` | Pendiente | Estado principal del motor, no exclusivamente de audio. |
 | `field_390` | Pendiente | Flag de contexto que impide iniciar música normal en ciertas situaciones; se usa en el flujo de minijuego. |
 
-Los nombres de los cinco IDs de menú son candidatos semánticos; no equivalen a los porcentajes. No se propone renombrar estructuras genéricas sin estudiar todos sus usos.
+Los cinco IDs de menú ya tienen nombres semánticos; no equivalen a los porcentajes. No se propone renombrar estructuras genéricas sin estudiar todos sus usos.
 
 ### 8.2. Construcción y actualización
 
-| Método | Nombre candidato | Responsabilidad |
+| Método | Nombre actual | Responsabilidad |
 |---|---|---|
-| `method_289(int)` | `buildAudioSettingsMenu` | Elige menú de volumen o ON/OFF. |
-| `method_290(int)` | `buildAudioToggleSettingsMenu` | Construye opciones ON/OFF y ajusta el menú principal. |
-| `method_291(int)` | `buildVolumeSettingsMenu` | Construye opciones de volumen y ajusta el menú principal. |
-| `method_293(...)` | Pendiente | Despachador general de acciones; caso 9 ejecuta `method_294`. |
-| `method_294()` | `changeAudioMenuSetting` | Ejecuta `method_224` y refresca el menú adecuado. |
+| `method_289(int)` | `buildMainMenuAudioSettings` | Elige menú de volumen o ON/OFF. |
+| `method_290(int)` | `buildMainMenuAudioToggle` | Construye opciones ON/OFF y ajusta el menú principal. |
+| `method_291(int)` | `buildMainMenuVolumeSettings` | Construye opciones de volumen y ajusta el menú principal. |
+| `method_293(...)` | Pendiente | Despachador general de acciones; caso 9 ejecuta `changeAudioMenuSetting`. |
+| `method_294()` | `changeAudioMenuSetting` | Ejecuta `changeAudioSetting` y refresca el menú adecuado. |
 | `method_295()` | `refreshAudioToggleMenu` | Refleja el flag habilitado/deshabilitado. |
 | `method_296()` | `refreshVolumeMenu` | Refleja el nivel guardado y el flag habilitado. |
-| `method_334()` | `buildInGameAudioMenu` | Elige modalidad del menú dentro de la partida. |
-| `method_335()` | `buildInGameAudioToggleMenu` | Configuración ON/OFF durante partida. |
-| `method_336()` | `buildInGameVolumeMenu` | Configuración de volumen durante partida. |
+| `method_334()` | `buildPauseMenuAudioSettings` | Elige modalidad del menú dentro de la partida. |
+| `method_335()` | `buildPauseMenuAudioToggle` | Configuración ON/OFF durante partida. |
+| `method_336()` | `buildPauseMenuVolumeSettings` | Configuración de volumen durante partida. |
 | `method_337(int,int,int,int,int,int,boolean)` | `buildVolumeMenu` | Construye menú reutilizable de cuatro niveles y opciones adicionales. |
 | `method_338(int,int,int,int,boolean)` | `buildAudioToggleMenu` | Construye menú reutilizable ON/OFF y opciones adicionales. |
 
 ```mermaid
 flowchart TD
-    A[method_293: acción 9] --> B[method_294]
-    B --> C[method_224]
+    A[method_293: acción 9] --> B[changeAudioMenuSetting]
+    B --> C[changeAudioSetting]
     C --> D{volumeControlSupported}
-    D -->|true| E[method_226: ciclo]
-    D -->|false| F[method_225: ON/OFF]
-    E --> G[method_296: refresco volumen]
-    F --> H[method_295: refresco ON/OFF]
+    D -->|true| E[cycleAudioVolume: ciclo]
+    D -->|false| F[toggleAudio: ON/OFF]
+    B --> G[refreshVolumeMenu si hay soporte]
+    B --> H[refreshAudioToggleMenu si no hay soporte]
 ```
 
-El diagrama resume el flujo: los métodos de refresco son invocados por `method_294` después de retornar de `method_224`, no directamente por los métodos 225/226.
+El diagrama resume el flujo: los métodos de refresco son invocados por `changeAudioMenuSetting` después de retornar de `changeAudioSetting`, no directamente por `toggleAudio` / `cycleAudioVolume`.
 
 ### 8.3. Representación del nivel
 
-`method_296` y `method_337` consultan `isAudioEnabled()` antes de examinar `field_71[3]`:
+`refreshVolumeMenu` y `buildVolumeMenu` consultan `isAudioEnabled()` antes de examinar `field_71[3]`:
 
 | Condición | Elemento visible |
 |---|---|
-| Deshabilitado | `field_292` |
-| Habilitado y valor 33 | `field_295` |
-| Habilitado y valor 66 | `field_294` |
-| Habilitado y cualquier otro valor | `field_293` |
+| Deshabilitado | `audioOffMenuItemId` |
+| Habilitado y valor 33 | `lowVolumeMenuItemId` |
+| Habilitado y valor 66 | `mediumVolumeMenuItemId` |
+| Habilitado y cualquier otro valor | `highVolumeMenuItemId` |
 
-`method_296` asigna el elemento a `field_256[0]`, actualiza su dato asociado en `field_251`, llama a `method_245` para los otros elementos y termina con `method_259`. Los detalles generales de esas operaciones gráficas quedan fuera de la desofuscación confirmada.
+`refreshVolumeMenu` asigna el elemento a `field_256[0]`, actualiza su dato asociado en `field_251`, llama a `method_245` para los otros elementos y termina con `method_259`. Los detalles generales de esas operaciones gráficas quedan fuera de la desofuscación confirmada.
 
-`method_337` obtiene los IDs con `method_244`, usa `method_256(..., 9)` para registrar la opción de audio y agrega otras opciones según sus parámetros. `method_338` aplica el mismo patrón para ON/OFF.
+`buildVolumeMenu` obtiene los IDs con `method_244`, usa `method_256(..., 9)` para registrar la opción de audio y agrega otras opciones según sus parámetros. `buildAudioToggleMenu` aplica el mismo patrón para ON/OFF.
+
+### 8.4. Textos localizados y diálogo inicial
+
+| Original | Actual | Clave de recurso |
+|---|---|---|
+| `field_310` | `audioOnTextId` | `s003` |
+| `field_311` | `audioOffTextId` | `s004` |
+| `field_312` | `highVolumeTextId` | `s010` |
+| `field_313` | `mediumVolumeTextId` | `s011` |
+| `field_314` | `lowVolumeTextId` | `s012` |
+| `field_315` | `audioMenuBackTextId` | `s005` |
+
+Los IDs de texto no son los IDs de elementos gráficos. Los primeros se resuelven con `method_197`; los segundos se crean con `method_244`. El menú principal usa IDs numéricos de texto y el menú de pausa usa los atributos localizados. `includeLanguageOption` habilita una opción adicional de idioma en el menú principal cuando existen varios idiomas; en pausa se pasa `false`.
+
+`method_237()` se renombró a `initializeAudioEnablePrompt()`. Prepara las referencias de texto y opciones mediante `method_265(25, 26)` y `method_266(20, 21)`, calcula la distribución con `imageHeight` y establece `field_237 = 2`. No reproduce audio ni dibuja por sí mismo. El `case 2` de `method_235()` procesa la respuesta; la opción 0 habilita el audio, recupera 66 si el byte guardado es cero, aplica el volumen si existe soporte y reproduce la pista 0. La opción 1 deshabilita y guarda cero. También se invoca desde el flujo de selección de idioma. El texto literal del diálogo no se ha comprobado en esta revisión.
+
+### 8.5. Inventario de parámetros y variables internas
+
+| Método | Nombres actuales |
+|---|---|
+| `loadAudio` | `audioId` |
+| `playAudio` | `audioId`, `loop`, `volumeControl` |
+| `closeAudioPlayer` | `player` |
+| `supportsVolumeControl` | `audioId`, `volumeControl` |
+| `setAudioVolume` | `volume`, `volumeControl` |
+| `setAudioEnabled` | `enabled` |
+| `handleAudioVisibilityChange` | `visible` |
+| `initializeAudioEnablePrompt` | `imageHeight` |
+| `buildMainMenuAudioSettings` | `selectedMenuIndex` |
+| `buildMainMenuAudioToggle` | `selectedMenuIndex`, `includeLanguageOption` |
+| `buildMainMenuVolumeSettings` | `selectedMenuIndex`, `includeLanguageOption` |
+| `buildVolumeMenu` | `offTextId`, `lowTextId`, `mediumTextId`, `highTextId`, `backTextId`, `backActionId`, `includeLanguageOption` |
+| `buildAudioToggleMenu` | `onTextId`, `offTextId`, `backTextId`, `backActionId`, `includeLanguageOption` |
+
+Las excepciones ignoradas se llaman `ignored`; no se modificó el tratamiento de errores. El recuento de las filas anteriores suma 29 parámetros/locales. Las APIs de compatibilidad mantienen sus firmas originales; sus parámetros breves no son parte de este inventario de desofuscación del motor.
 
 ## 9. Persistencia: `field_71[3]`
 
@@ -369,8 +406,8 @@ El volumen predeterminado de un registro nuevo es 66. El índice 2 también se i
 |---|---|
 | `method_230` | Inicializa 66 para registro nuevo. |
 | `method_235`, caso 2 | Si el usuario acepta sonido, cambia 0 a 66 y aplica el nivel solo si hay soporte; si rechaza, escribe 0. |
-| `method_226` | Escribe 33, 66, 100 o 0 durante el ciclo original. |
-| `method_296`, `method_337` | Consultan los valores exactos para mostrar el menú. |
+| `cycleAudioVolume` | Escribe 33, 66, 100 o 0 durante el ciclo original. |
+| `refreshVolumeMenu`, `buildVolumeMenu` | Consultan los valores exactos para mostrar el menú. |
 
 En la pantalla inicial se vuelve a preguntar si se desea sonido; elegir afirmativamente con un valor guardado de 0 restablece 66. Por tanto, el byte guardado no equivale a un interruptor ON/OFF restaurado automáticamente en todas las circunstancias.
 
@@ -398,12 +435,12 @@ Al cerrar la ventana, `Display` llama a `Mapp.requestExit()`, que pone `GameEngi
 
 ### 10.2. Interrupciones de visibilidad
 
-El mecanismo original recuperado está formado por `hideNotify()`, `showNotify()`, la cola `field_48`, `method_13()`, `method_14()`, `method_227(int)` y `method_223(boolean)`.
+El mecanismo original recuperado está formado por `hideNotify()`, `showNotify()`, la cola `field_48`, `method_13()`, `method_14()`, `method_227(int)` y `handleAudioVisibilityChange(boolean)`.
 
 - Al ocultarse, `hideNotify()` encola el valor 1. El hilo del motor lo consume, `method_13()` llama a `method_227(0)` y limpia las teclas retenidas.
-- `method_227(0)` guarda el estado del juego en `field_227`, cambia a estado 1 y solicita suspensión mediante `method_223(false)`.
+- `method_227(0)` guarda el estado del juego en `field_227`, cambia a estado 1 y solicita suspensión mediante `handleAudioVisibilityChange(false)`.
 - Si el audio está habilitado y se estaba reproduciendo en bucle un ID válido, se guarda en `audioIdToResume`; de lo contrario se escribe -1. Se detiene el audio.
-- Al mostrarse, `showNotify()` encola 2. `method_14()` llama a `method_227(1)`, restaura el estado previo cuando corresponde e invoca `method_223(true)`.
+- Al mostrarse, `showNotify()` encola 2. `method_14()` llama a `method_227(1)`, restaura el estado previo cuando corresponde e invoca `handleAudioVisibilityChange(true)`.
 - Si el sonido sigue habilitado y el ID guardado es válido, se llama a `playAudio(audioIdToResume, true)`. La pista se carga nuevamente desde el inicio, no desde la posición exacta anterior.
 
 **Limitación del port actual:** `Display.java` no conecta eventos de minimización/restauración con `hideNotify()` y `showNotify()`. En `GameCanvas.java`, `focusLost()` únicamente libera las teclas. Por tanto, la lógica de suspensión existe en el motor, pero no se ha demostrado que se active mediante los eventos de ventana del escritorio. No debe confundirse perder el foco con el ciclo de visibilidad de Java ME.
@@ -413,8 +450,8 @@ El mecanismo original recuperado está formado por `hideNotify()`, `showNotify()
 | Método | Audio o acción |
 |---|---|
 | `method_187`, caso 17 | Selección de pista 1 o 2 a partir de `field_193[0]`. |
-| `method_223` | Detener o reiniciar música por visibilidad. |
-| `method_225`, `method_226` | Detener/reactivar audio desde configuración. |
+| `handleAudioVisibilityChange` | Detener o reiniciar música por visibilidad. |
+| `toggleAudio`, `cycleAudioVolume` | Detener/reactivar audio desde configuración. |
 | `method_235` | Pista 0 al aceptar sonido al inicio. |
 | `method_279` | Detención en dos ramas de transición del menú. |
 | `method_301` | Detención en el flujo de carga. |
@@ -491,7 +528,7 @@ public Object getControl(String name) {
 }
 ```
 
-**Consecuencia:** aunque el motor original dispone de un algoritmo de volumen, el port informa que no admite dicho control. `supportsVolumeControl(3)` retorna false y los menús eligen `method_225`, `method_295` y `method_338`. Invocar `setAudioVolume` directamente modifica su atributo, pero no la amplitud del sonido.
+**Consecuencia:** aunque el motor original dispone de un algoritmo de volumen, el port informa que no admite dicho control. `supportsVolumeControl(3)` retorna false y los menús eligen `toggleAudio`, `refreshAudioToggleMenu` y `buildAudioToggleMenu`. Invocar `setAudioVolume` directamente modifica su atributo, pero no la amplitud del sonido.
 
 No debe solucionarse retornando un objeto ficticio: la implementación deberá modificar realmente el volumen del dispositivo MIDI y mantener la compatibilidad con el contrato.
 
@@ -502,7 +539,9 @@ No debe solucionarse retornando un objeto ficticio: la implementación deberá m
 3. Se experimentó con F5/F6, máscaras de entrada nuevas, `VOLUME_STEP`, `processPcControls` y una implementación explícita de sintetizador con volumen maestro MIDI.
 4. Se descubrió que el motor ya gestionaba sus propios niveles persistentes, menú y reactivación. La solución experimental modificaba el volumen de ejecución sin integrarse completamente con esos estados originales.
 5. Se decidió revertir la implementación experimental y estudiar primero el código existente. Los commits identificados fueron `ce21a8b` (WIP: update vol) y `e500b03` (WIP: VOL CONTROL), posteriores a `1622633` (desofuscación de idiomas). El historial remoto no se ha consultado para este documento; la reversión se constata en el contenido de las versiones de fuentes disponibles.
-6. En la versión documentada se completó el renombramiento de nueve atributos y doce métodos de audio, agrupando los atributos relacionados. El resto de los métodos de configuración y menú sigue pendiente de desofuscación.
+6. Se renombraron nueve atributos y doce métodos de reproducción.
+7. Se desofuscaron cuatro métodos de configuración y visibilidad, cinco IDs gráficos, tres métodos de actualización de menús, ocho constructores de menús, seis IDs de textos y el diálogo inicial.
+8. Se renombraron los parámetros y locales inventariados, incluyendo `volumeControl` en `playAudio`, y se agruparon los atributos. Se actualizaron las rutas MIDI a `audio/s0.mid`–`audio/s4.mid`.
 
 ### Estado de las funcionalidades experimentales
 
@@ -515,7 +554,7 @@ No debe solucionarse retornando un objeto ficticio: la implementación deberá m
 | `updateGameVolume()` | Ausente. |
 | Sintetizador explícito con mensajes Master Volume | No implementado actualmente. |
 | Ciclo original 0/33/66/100 | Conservado en el motor; no seleccionado por el adaptador actual. |
-| Desofuscación semántica de 21 identificadores | Presente. |
+| Desofuscación del inventario de 77 identificadores | Presente. |
 
 ## 13. Limitaciones y riesgos técnicos identificados
 
@@ -529,8 +568,8 @@ Estos puntos se documentan para futuras tareas; no constituyen cambios aprobados
 | `stopAudio` depende de `currentAudioId`. | Una referencia existente no implica necesariamente un reproductor abierto o un ID registrado. |
 | No existe callback de fin de pista. | El ID registrado puede mantenerse después de finalizar un efecto de reproducción única. |
 | Reproductor único. | Un efecto puede reemplazar música de fondo; no hay mezcla independiente a nivel del motor. |
-| `method_225` no escribe el byte de volumen. | La selección ON/OFF no se refleja necesariamente en el almacenamiento. |
-| `method_226` solo admite valores exactos. | Un valor intermedio puede dejar sin transición el ciclo del menú. |
+| `toggleAudio` no escribe el byte de volumen. | La selección ON/OFF no se refleja necesariamente en el almacenamiento. |
+| `cycleAudioVolume` solo admite valores exactos. | Un valor intermedio puede dejar sin transición el ciclo del menú. |
 | Eventos de visibilidad no conectados en `Display`. | Minimizar o recuperar una ventana puede no reproducir el comportamiento de suspensión del móvil. |
 | Volumen aplicado después de iniciar la pista. | Al implementar el control real, conviene verificar que no aparezca un breve inicio a volumen distinto. |
 
@@ -538,14 +577,14 @@ Estos puntos se documentan para futuras tareas; no constituyen cambios aprobados
 
 El orden de trabajo debe respetar el objetivo de conservación del juego original:
 
-1. Completar la desofuscación de los métodos `223–226` y `294–296`, revisando los nombres propuestos, sin cambiar sus algoritmos.
-2. Identificar semánticamente los elementos y constructores de menú relacionados con audio, evitando renombrar estructuras genéricas sin investigar todos sus usos.
+1. Cerrar la documentación del inventario de nombres completado.
+2. Evaluar en otro commit las constantes para IDs MIDI, niveles 0/33/66/100, índice persistente 3 y centinela -1; no sustituir números globalmente. Las estructuras genéricas se investigarán aparte.
 3. Implementar el contrato `VolumeControl` en la capa de compatibilidad con Java SE. Elegir un mecanismo MIDI que controle efectivamente la amplitud general sin destruir el balance musical de la secuencia.
 4. Validar la detección de capacidad y las opciones originales OFF, bajo, medio y alto, sin introducir teclas adicionales.
 5. Validar persistencia, reproducción de efectos y reinicio de música. Evaluar por separado la conexión de eventos de visibilidad del escritorio.
 6. Solo si se aprueba una mejora de PC, conectar atajos de teclado al sistema existente. Mantener inicialmente los niveles originales o documentar explícitamente cualquier cambio de política y de representación del menú.
 
-No modificar el formato de `House.sav` ni crear una segunda configuración de volumen sin una necesidad demostrada. `setAudioVolume` es una operación de bajo nivel, mientras `method_224`/`method_226` contienen la política original de configuración.
+No modificar el formato de `House.sav` ni crear una segunda configuración de volumen sin una necesidad demostrada. `setAudioVolume` es una operación de bajo nivel, mientras `changeAudioSetting`/`cycleAudioVolume` contienen la política original de configuración.
 
 ## 15. Plan de pruebas de regresión
 
@@ -572,11 +611,12 @@ Para una prueba de guardado utilizar una copia del archivo `House.sav` o un dire
 
 | Fuente | Ubicación o contenido |
 |---|---|
-| `java(20261126-193846).zip` | Fuente principal de esta documentación. |
-| `GameEngine.java` | Atributos 92–100; ciclo de vida 912–1044; reproducción 2118–2246; RMS 2250–2295; script 4533–4535; configuración 5011–5110; arranque 5189–5294; menús 6154–6349 y 7045–7120; minijuego 8264–8331. |
+| `java(20261127-025939).zip` | Fuente principal actual. |
+| `java(20261126-193846).zip` | Primera etapa de desofuscación de audio. |
+| `GameEngine.java` | Atributos 92–123; reproducción 2119–2257; configuración 5020–5097; diálogo 5333; menús principales 6157–6185; refresco 6299–6350; textos 6456–6466; constructores compartidos 7062–7140; efectos 8341–8346. |
 | `java(20261126-150207).zip` | Versión anterior a la primera desofuscación del audio. |
 | `java(20261126-061008).zip` | Versión experimental anterior a la reversión. |
 | `DoctorHousePC_0.1.0.zip` | Cabeceras y tamaños de los cinco recursos MIDI. |
 | `savethegame.md` | Documentación complementaria de RMS y archivo de partida. |
 
-Las líneas corresponden al ZIP principal y pueden desplazarse con los próximos renombramientos. El análisis es estático; no se han ejecutado pruebas auditivas ni se ha modificado el código fuente. Los nombres candidatos representan propuestas de desofuscación, no identificadores ya implementados.
+Las líneas corresponden al ZIP principal y pueden desplazarse con los próximos renombramientos. El análisis es estático; no se han ejecutado pruebas auditivas ni se ha modificado el código fuente. Los nombres actuales se contrastaron con el ZIP de referencia; las constantes y nombres de dependencias generales pendientes son propuestas.
