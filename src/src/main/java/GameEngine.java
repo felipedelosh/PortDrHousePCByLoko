@@ -2116,60 +2116,67 @@ public class GameEngine extends GameCanvas implements Runnable {
       return method_66(field_47[var0]);
    }
 
-   private static void loadAudio(int var0) {
+   private static void loadAudio(int audioId) {
       if (currentAudioId >= 0) {
          stopAudio();
       }
 
       try {
-         audioPlayer = Manager.createPlayer(GameEngine.class.getResourceAsStream(audioResourcePaths[var0]), audioMimeTypes[var0]);
-      } catch (Exception var2) {
+         audioPlayer = Manager.createPlayer(GameEngine.class.getResourceAsStream(audioResourcePaths[audioId]), audioMimeTypes[audioId]);
+      } 
+      catch (Exception ignored) {
       }
    }
 
-   public static void playAudio(int var0, boolean var1) {
-      if (var0 >= 0 && var0 < audioResourcePaths.length && audioEnabled) {
-         loadAudio(var0);
+   public static void playAudio(int audioId, boolean loop) {
+      if (audioId >= 0 && audioId < audioResourcePaths.length && audioEnabled) {
+         loadAudio(audioId);
          if (audioPlayer != null) {
             try {
                audioPlayer.realize();
-            } catch (Exception var8) {
+            } 
+            catch (Exception ignored) {
             }
 
             try {
-               audioPlayer.setLoopCount(var1 ? -1 : 1);
-            } catch (Exception var7) {
+               audioPlayer.setLoopCount(loop ? -1 : 1);
+            } 
+            catch (Exception ignored) {
             }
 
             try {
                audioPlayer.prefetch();
-            } catch (Exception var6) {
+            } 
+            catch (Exception ignored) {
                closeAudioPlayer(audioPlayer);
                return;
             }
 
             try {
                audioPlayer.setMediaTime(-1L);
-            } catch (Exception var5) {
+            } 
+            catch (Exception ignored) {
             }
 
             try {
                audioPlayer.start();
-            } catch (Exception var4) {
+            } 
+            catch (Exception ignored) {
                closeAudioPlayer(audioPlayer);
                return;
             }
 
             try {
-               VolumeControl var2;
-               if ((var2 = (VolumeControl)audioPlayer.getControl("VolumeControl")) != null) {
-                  var2.setLevel(audioVolume);
+               VolumeControl volumeControl;
+               if ((volumeControl = (VolumeControl)audioPlayer.getControl("VolumeControl")) != null) {
+                  volumeControl.setLevel(audioVolume);
                }
-            } catch (Exception var3) {
+            } 
+            catch (Exception ignored) {
             }
 
-            currentAudioId = var0;
-            audioLoopEnabled = var1;
+            currentAudioId = audioId;
+            audioLoopEnabled = loop;
             System.currentTimeMillis();
          }
       }
@@ -2182,9 +2189,9 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
    }
 
-   private static void closeAudioPlayer(Player var0) {
-      if (var0 != null) {
-         var0.close();
+   private static void closeAudioPlayer(Player player) {
+      if (player != null) {
+         player.close();
       }
    }
 
@@ -2196,19 +2203,20 @@ public class GameEngine extends GameCanvas implements Runnable {
       return currentAudioId < 0 ? false : audioLoopEnabled;
    }
 
-   public static boolean supportsVolumeControl(int var0) {
-      if (var0 >= 0 && var0 < audioResourcePaths.length) {
-         loadAudio(var0);
+   public static boolean supportsVolumeControl(int audioId) {
+      if (audioId >= 0 && audioId < audioResourcePaths.length) {
+         loadAudio(audioId);
          if (audioPlayer == null) {
             return false;
          }
 
          try {
             audioPlayer.realize();
-            VolumeControl var1 = (VolumeControl)audioPlayer.getControl("VolumeControl");
+            VolumeControl volumeControl = (VolumeControl)audioPlayer.getControl("VolumeControl");
             closeAudioPlayer(audioPlayer);
-            return var1 != null;
-         } catch (Exception var2) {
+            return volumeControl != null;
+         }
+         catch (Exception ignored) {
             closeAudioPlayer(audioPlayer);
             return false;
          }
@@ -2217,14 +2225,15 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
    }
 
-   public static void setAudioVolume(int var0) {
+   public static void setAudioVolume(int volume) {
       try {
-         audioVolume = Math.max(0, Math.min(var0, 100));
-         VolumeControl var1;
-         if (currentAudioId >= 0 && (var1 = (VolumeControl)audioPlayer.getControl("VolumeControl")) != null) {
-            var1.setLevel(audioVolume);
+         audioVolume = Math.max(0, Math.min(volume, 100));
+         VolumeControl volumeControl;
+         if (currentAudioId >= 0 && (volumeControl = (VolumeControl)audioPlayer.getControl("VolumeControl")) != null) {
+            volumeControl.setLevel(audioVolume);
          }
-      } catch (Exception var2) {
+      }
+      catch (Exception ignored) {
       }
    }
 
@@ -2232,9 +2241,9 @@ public class GameEngine extends GameCanvas implements Runnable {
       return audioEnabled;
    }
 
-   public static void setAudioEnabled(boolean var0) {
-      audioEnabled = var0;
-      if (!var0 && currentAudioId >= 0) {
+   public static void setAudioEnabled(boolean enabled) {
+      audioEnabled = enabled;
+      if (!enabled && currentAudioId >= 0) {
          stopAudio();
       }
    }
@@ -5008,9 +5017,9 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_226 = 0;
    }
 
-   private static void handleAudioVisibilityChange(boolean var0) {
+   private static void handleAudioVisibilityChange(boolean visible) {
       if (isAudioEnabled()) {
-         if (var0) {
+         if (visible) {
             if (audioIdToResume >= 0) {
                playAudio(audioIdToResume, true);
                return;
@@ -5324,8 +5333,8 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static void initializeAudioEnablePrompt() {
       method_265(25, 26);
       method_266(20, 21);
-      int var0 = field_236.getHeight();
-      method_267(1, var0 + 20, field_223 - var0 - 40, 1);
+      int imageHeight = field_236.getHeight();
+      method_267(1, imageHeight + 20, field_223 - imageHeight - 40, 1);
       field_237 = 2;
    }
 
@@ -6146,32 +6155,34 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_290 = 5;
    }
 
-   private static void buildMainMenuAudioSettings(int var0) {
+   private static void buildMainMenuAudioSettings(int selectedMenuIndex) {
       if (volumeControlSupported) {
-         buildMainMenuVolumeSettings(var0);
+         buildMainMenuVolumeSettings(selectedMenuIndex);
       } else {
-         buildMainMenuAudioToggle(var0);
+         buildMainMenuAudioToggle(selectedMenuIndex);
       }
    }
 
-   private static void buildMainMenuAudioToggle(int var0) {
-      boolean var1 = false;
+   private static void buildMainMenuAudioToggle(int selectedMenuIndex) {
+      boolean includeLanguageOption = false;
+
       if (!method_236()) {
-         var1 = true;
+         includeLanguageOption = true;
       }
 
-      buildAudioToggleMenu(7, 8, 13, 8, var1);
-      method_292(var0);
+      buildAudioToggleMenu(7, 8, 13, 8, includeLanguageOption);
+      method_292(selectedMenuIndex);
    }
 
-   private static void buildMainMenuVolumeSettings(int var0) {
-      boolean var1 = false;
+   private static void buildMainMenuVolumeSettings(int selectedMenuIndex) {
+      boolean includeLanguageOption = false;
+
       if (!method_236()) {
-         var1 = true;
+         includeLanguageOption = true;
       }
 
-      buildVolumeMenu(8, 11, 10, 9, 13, 8, var1);
-      method_292(var0);
+      buildVolumeMenu(8, 11, 10, 9, 13, 8, includeLanguageOption);
+      method_292(selectedMenuIndex);
    }
 
    private static void method_292(int var0) {
@@ -7048,13 +7059,24 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_258(field_222 >> 1, 0, field_223, 0);
    }
 
-   private static void buildVolumeMenu(int var0, int var1, int var2, int var3, int var4, int var5, boolean var6) {
+   private static void buildVolumeMenu(
+      int offTextId,
+      int lowTextId,
+      int mediumTextId,
+      int highTextId,
+      int backTextId,
+      int backActionId,
+      boolean includeLanguageOption
+   ) {
       method_243();
-      audioOffMenuItemId = method_244(var0);
-      highVolumeMenuItemId = method_244(var3);
-      mediumVolumeMenuItemId = method_244(var2);
-      lowVolumeMenuItemId = method_244(var1);
+
+      audioOffMenuItemId = method_244(offTextId);
+      highVolumeMenuItemId = method_244(highTextId);
+      mediumVolumeMenuItemId = method_244(mediumTextId);
+      lowVolumeMenuItemId = method_244(lowTextId);
+
       method_255();
+
       if (isAudioEnabled()) {
          if (field_71[3] == 33) {
             method_256(lowVolumeMenuItemId, 9);
@@ -7078,18 +7100,27 @@ public class GameEngine extends GameCanvas implements Runnable {
          method_245(lowVolumeMenuItemId);
       }
 
-      if (var6) {
+      if (includeLanguageOption) {
          method_256(method_244(12), 17);
       }
 
-      method_256(method_244(var4), var5);
+      method_256(method_244(backTextId), backActionId);
    }
 
-   private static void buildAudioToggleMenu(int var0, int var1, int var2, int var3, boolean var4) {
+   private static void buildAudioToggleMenu(
+      int onTextId,
+      int offTextId,
+      int backTextId,
+      int backActionId,
+      boolean includeLanguageOption
+   ) {
       method_243();
-      audioOnMenuItemId = method_244(var0);
-      audioOffMenuItemId = method_244(var1);
+
+      audioOnMenuItemId = method_244(onTextId);
+      audioOffMenuItemId = method_244(offTextId);
+
       method_255();
+
       if (isAudioEnabled()) {
          method_256(audioOnMenuItemId, 9);
          method_245(audioOffMenuItemId);
@@ -7098,11 +7129,11 @@ public class GameEngine extends GameCanvas implements Runnable {
          method_245(audioOnMenuItemId);
       }
 
-      if (var4) {
+      if (includeLanguageOption) {
          method_256(method_244(12), 17);
       }
 
-      method_256(method_244(var2), var3);
+      method_256(method_244(backTextId), backActionId);
    }
 
    // $VF: renamed from: bh () void
