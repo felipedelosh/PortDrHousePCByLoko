@@ -92,7 +92,7 @@ Functional fixes and new features should be isolated from semantic refactoring s
 
 The original engine already includes audio activation, volume cycling (0, 33, 66, 100), persistent settings, and menu synchronization. The current Java SE `Player.getControl()` implementation returns `null`, so the original volume-control capability is not yet exposed by the adapter. The engine consequently uses its original sound-toggle fallback. Earlier experimental F5/F6 changes were reverted to prioritize the original architecture.
 
-See [audioSystemGame.md](Docs/audioSystemGame.md) for the detailed investigation.
+See [audioSystemGame.md](Docs/originalDevDoc/audioSystemGame.md) for the detailed investigation.
 
 ## :building_construction: Repository Structure
 
