@@ -57,7 +57,7 @@ During initial source recovery, a rendering freeze was traced to decompiled loop
 
 ## :mag: Current Phase: Semantic Deobfuscation
 
-Decompilation recovered executable Java source, but many identifiers remain obfuscated, such as `field_71`, `method_294`, and local variables such as `var0`. Compilable code is not necessarily understandable code.
+Decompilation recovered executable Java source, but many identifiers remain obfuscated, such as `field_71`, `method_228`, and local variables such as `var0`. Compilable code is not necessarily understandable code.
 
 The current task is to reconstruct the meaning of these identifiers from their declarations, assignments, call sites, control flow, resource usage, and observable behavior. Names are written in English and are descriptive of the responsibilities supported by the evidence.
 
@@ -73,7 +73,7 @@ The current task is to reconstruct the meaning of these identifiers from their d
 
 Functional fixes and new features should be isolated from semantic refactoring so they can be reviewed and tested separately. Uncertain names remain unchanged until more evidence is available.
 
-### Example: audio system
+### Completed milestone: audio semantic deobfuscation
 
 | Original identifier | Current semantic identifier |
 | :--- | :--- |
@@ -90,7 +90,32 @@ Functional fixes and new features should be isolated from semantic refactoring s
 | `method_225` | `toggleAudio` |
 | `method_226` | `cycleAudioVolume` |
 
-The original engine already includes audio activation, volume cycling (0, 33, 66, 100), persistent settings, and menu synchronization. The current Java SE `Player.getControl()` implementation returns `null`, so the original volume-control capability is not yet exposed by the adapter. The engine consequently uses its original sound-toggle fallback. Earlier experimental F5/F6 changes were reverted to prioritize the original architecture.
+The audio naming milestone covers the agreed inventory: 20 fields, 28 methods and 29 parameters/local variables (77/77). This is not a measure of full engine deobfuscation or functional audio compatibility. The original engine already includes audio activation, volume cycling (0, 33, 66, 100), persistent settings, and menu synchronization. The current Java SE `Player.getControl()` implementation returns `null`, so the original volume-control capability is not yet exposed by the adapter. The engine consequently uses its original sound-toggle fallback. Earlier experimental F5/F6 changes were reverted to prioritize the original architecture.
+
+The recovered audio architecture now includes the initial sound prompt, main and pause menu builders, localized text and menu item identifiers, capability detection, original setting policy, playback, visibility handling and persistent volume. The current resource references are `audio/s0.mid` through `audio/s4.mid`.
+
+```mermaid
+flowchart TD
+    Prompt[initializeAudioEnablePrompt] --> Answer[method_235: sound response]
+    MainMenu[buildMainMenuAudioSettings] --> Builders[Shared audio menu builders]
+    PauseMenu[buildPauseMenuAudioSettings] --> Builders
+    Builders --> Action[changeAudioMenuSetting]
+    Action --> Policy[changeAudioSetting]
+    Policy --> Capability{volumeControlSupported}
+    Capability -->|Yes| Cycle[cycleAudioVolume]
+    Capability -->|No| Toggle[toggleAudio]
+    Cycle --> Save[Persistent volume byte: field_71 index 3]
+    Cycle --> Playback[Playback and volume methods]
+    Toggle --> Playback
+    Answer --> Playback
+    Visibility[handleAudioVisibilityChange] --> Playback
+    Gameplay[Game events and scripts] --> Playback
+    Playback --> Adapter[Manager and Player]
+    Adapter --> MIDI[Java Sound Sequencer]
+    Action --> Refresh[Refresh volume or toggle menu]
+```
+
+The volume constants and shared save-data/state identifiers remain candidates for separate semantic refactoring. No new volume policy or keyboard shortcut was introduced.
 
 See [audioSystemGame.md](Docs/originalDevDoc/audioSystemGame.md) for the detailed investigation.
 
@@ -102,7 +127,8 @@ The repository root contains the preservation materials and documentation. The *
 PortDrHousePCByLoko/
 ├── Docs/                         # Documentation and images
 │   ├── banner.png
-│   ├── audioSystemGame.md
+│   ├── originalDevDoc/
+│   │   └── audioSystemGame.md
 │   └── savethegame.md
 ├── INPUT/                        # Original game materials
 ├── TOOLS/                        # Reverse-engineering tools
@@ -138,6 +164,7 @@ PortDrHousePCByLoko/
 │   │       │           └── rms/
 │   │       │               └── RecordStore.java
 │   │       └── resources/        # Original runtime assets
+│   │           └── audio/        # s0.mid through s4.mid (current source paths)
 │   ├── build.gradle
 │   ├── settings.gradle
 │   ├── README.md                 # Module documentation
@@ -162,7 +189,8 @@ flowchart TD
     Engine --> Resources[Original resources]
     Config[GameConfiguration] --> Engine
     Config --> Canvas
-    Config --> MIDlet
+    Config --> Display[Display adapter]
+    Display --> Swing
     Canvas --> Swing[Swing and Java2D]
     MIDlet --> Swing
     Audio --> MIDI[Java Sound / MIDI]
@@ -284,7 +312,10 @@ Initial desktop runtime tests have rendered the original hospital, characters, a
 - [x] Investigate and rename language configuration identifiers.
 - [x] Rename the core audio playback identifiers.
 - [x] Rename original audio setting methods and audio menu item identifiers.
-- [ ] Finish audio menu methods and document remaining dependencies.
+- [x] Rename audio menu builders, refresh methods, localized text IDs and initial audio prompt.
+- [x] Rename the inventoried audio parameters and local variables.
+- [x] Document the recovered audio architecture and its limitations.
+- [ ] Extract audio-specific numeric constants where justified (IDs, volume levels, sentinel and save index).
 - [ ] Deobfuscate persistence and save-data indices.
 - [ ] Deobfuscate binary and image resource loading.
 - [ ] Investigate the game loop, lifecycle, and state machine.
@@ -295,7 +326,7 @@ Initial desktop runtime tests have rendered the original hospital, characters, a
 - [ ] Investigate minigames and remaining gameplay systems.
 - [ ] Rename local variables and parameters as their meaning becomes clear.
 
-Progress is tracked by investigated identifiers and subsystems rather than by an unverified percentage of project completion. Completing a rename batch does not imply that all behavior of the subsystem is fully understood or tested.
+Progress is tracked by investigated identifiers and subsystems rather than by an unverified percentage of project completion. The audio naming inventory is complete; shared dependencies and numeric constants remain outside that milestone. Completing a rename batch does not imply that all behavior of the subsystem is fully understood or tested.
 
 ### Phase 3 — Compatibility, regression testing, and future improvements
 
@@ -311,7 +342,7 @@ Technical notes are maintained in [Docs/](Docs/). The detailed module and port d
 
 | Document | Purpose |
 | :--- | :--- |
-| [Audio system](Docs/audioSystemGame.md) | Original audio architecture, semantic identifiers, volume behavior, persistence, and adapter limitations. |
+| [Audio system](Docs/originalDevDoc/audioSystemGame.md) | Original audio architecture, semantic identifiers, volume behavior, persistence, and adapter limitations. |
 | [Save system](Docs/savethegame.md) | File-based RecordStore and save location. |
 | [Module README](src/README.md) | Desktop module technical documentation. |
 | [Port README](src/README_PORT.md) | Desktop port notes. |
