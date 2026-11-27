@@ -115,6 +115,12 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static int highVolumeMenuItemId;
    private static int mediumVolumeMenuItemId;
    private static int lowVolumeMenuItemId;
+   private static int audioOnTextId;
+   private static int audioOffTextId;
+   private static int highVolumeTextId;
+   private static int mediumVolumeTextId;
+   private static int lowVolumeTextId;
+   private static int audioMenuBackTextId;
    // $VF: renamed from: a javax.microedition.rms.RecordStore
    public static RecordStore field_70;
    // $VF: renamed from: d byte[]
@@ -661,18 +667,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static int field_308;
    // $VF: renamed from: cb int
    private static int field_309;
-   // $VF: renamed from: cc int
-   private static int field_310;
-   // $VF: renamed from: cd int
-   private static int field_311;
-   // $VF: renamed from: ce int
-   private static int field_312;
-   // $VF: renamed from: cf int
-   private static int field_313;
-   // $VF: renamed from: cg int
-   private static int field_314;
-   // $VF: renamed from: ch int
-   private static int field_315;
    // $VF: renamed from: ci int
    private static int field_316;
    // $VF: renamed from: cj int
@@ -5273,7 +5267,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             }
 
             method_63("b");
-            method_237();
+            initializeAudioEnablePrompt();
             return;
          case 2:
             int var0;
@@ -5327,8 +5321,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       return languageCodes == null || languageCodes.length <= 1;
    }
 
-   // $VF: renamed from: ae () void
-   private static void method_237() {
+   private static void initializeAudioEnablePrompt() {
       method_265(25, 26);
       method_266(20, 21);
       int var0 = field_236.getHeight();
@@ -6153,38 +6146,34 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_290 = 5;
    }
 
-   // $VF: renamed from: L (int) void
-   private static void method_289(int var0) {
+   private static void buildMainMenuAudioSettings(int var0) {
       if (volumeControlSupported) {
-         method_291(var0);
+         buildMainMenuVolumeSettings(var0);
       } else {
-         method_290(var0);
+         buildMainMenuAudioToggle(var0);
       }
    }
 
-   // $VF: renamed from: M (int) void
-   private static void method_290(int var0) {
+   private static void buildMainMenuAudioToggle(int var0) {
       boolean var1 = false;
       if (!method_236()) {
          var1 = true;
       }
 
-      method_338(7, 8, 13, 8, var1);
+      buildAudioToggleMenu(7, 8, 13, 8, var1);
       method_292(var0);
    }
 
-   // $VF: renamed from: N (int) void
-   private static void method_291(int var0) {
+   private static void buildMainMenuVolumeSettings(int var0) {
       boolean var1 = false;
       if (!method_236()) {
          var1 = true;
       }
 
-      method_337(8, 11, 10, 9, 13, 8, var1);
+      buildVolumeMenu(8, 11, 10, 9, 13, 8, var1);
       method_292(var0);
    }
 
-   // $VF: renamed from: O (int) void
    private static void method_292(int var0) {
       int var1;
       var1 = (var1 = field_235.getWidth() >> 1) + (field_222 - var1 >> 1);
@@ -6237,7 +6226,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             break;
          case 6:
             method_263();
-            method_289(0);
+            buildMainMenuAudioSettings(0);
             break;
          case 7:
             method_281();
@@ -6246,7 +6235,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             method_283(method_264());
             break;
          case 9:
-            method_294();
+            changeAudioMenuSetting();
             break;
          case 10:
             field_321 = false;
@@ -6260,7 +6249,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             break;
          case 11:
             method_263();
-            method_334();
+            buildPauseMenuAudioSettings();
             break;
          case 12:
             method_344();
@@ -6288,26 +6277,24 @@ public class GameEngine extends GameCanvas implements Runnable {
          setSelectedLanguage(var0);
          method_63("b");
          if (field_226 == 4) {
-            method_237();
+            initializeAudioEnablePrompt();
             return;
          }
 
-         method_289(method_264());
+         buildMainMenuAudioSettings(method_264());
       }
    }
 
-   // $VF: renamed from: aG () void
-   private static void method_294() {
+   private static void changeAudioMenuSetting() {
       changeAudioSetting();
       if (volumeControlSupported) {
-         method_296();
+         refreshVolumeMenu();
       } else {
-         method_295();
+         refreshAudioToggleMenu();
       }
    }
 
-   // $VF: renamed from: aH () void
-   private static void method_295() {
+   private static void refreshAudioToggleMenu() {
       if (isAudioEnabled()) {
          field_256[0] = audioOnMenuItemId;
          field_251[audioOnMenuItemId] = field_262;
@@ -6321,8 +6308,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       }
    }
 
-   // $VF: renamed from: aI () void
-   private static void method_296() {
+   private static void refreshVolumeMenu() {
       if (isAudioEnabled()) {
          if (field_71[3] == 33) {
             field_256[0] = lowVolumeMenuItemId;
@@ -6456,16 +6442,16 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_307 = method_197("s000");
       field_309 = method_197("s001");
       field_308 = method_197("s002");
-      field_310 = method_197("s003");
-      field_311 = method_197("s004");
-      field_315 = method_197("s005");
+      audioOnTextId = method_197("s003");
+      audioOffTextId = method_197("s004");
+      audioMenuBackTextId = method_197("s005");
       field_316 = method_197("s006");
       field_317 = method_197("s007");
       field_318 = method_197("s008");
       field_319 = method_197("s009");
-      field_312 = method_197("s010");
-      field_313 = method_197("s011");
-      field_314 = method_197("s012");
+      highVolumeTextId = method_197("s010");
+      mediumVolumeTextId = method_197("s011");
+      lowVolumeTextId = method_197("s012");
       field_320 = method_197("s013");
       field_344 = 0;
 
@@ -7044,29 +7030,25 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_258(field_222 >> 1, 0, field_223, var0);
    }
 
-   // $VF: renamed from: be () void
-   private static void method_334() {
+   private static void buildPauseMenuAudioSettings() {
       if (volumeControlSupported) {
-         method_336();
+         buildPauseMenuVolumeSettings();
       } else {
-         method_335();
+         buildPauseMenuAudioToggle();
       }
    }
 
-   // $VF: renamed from: bf () void
-   private static void method_335() {
-      method_338(field_310, field_311, field_315, 13, false);
+   private static void buildPauseMenuAudioToggle() {
+      buildAudioToggleMenu(audioOnTextId, audioOffTextId, audioMenuBackTextId, 13, false);
       method_258(field_222 >> 1, 0, field_223, 0);
    }
 
-   // $VF: renamed from: bg () void
-   private static void method_336() {
-      method_337(field_311, field_314, field_313, field_312, field_315, 13, false);
+   private static void buildPauseMenuVolumeSettings() {
+      buildVolumeMenu(audioOffTextId, lowVolumeTextId, mediumVolumeTextId, highVolumeTextId, audioMenuBackTextId, 13, false);
       method_258(field_222 >> 1, 0, field_223, 0);
    }
 
-   // $VF: renamed from: a (int, int, int, int, int, int, boolean) void
-   private static void method_337(int var0, int var1, int var2, int var3, int var4, int var5, boolean var6) {
+   private static void buildVolumeMenu(int var0, int var1, int var2, int var3, int var4, int var5, boolean var6) {
       method_243();
       audioOffMenuItemId = method_244(var0);
       highVolumeMenuItemId = method_244(var3);
@@ -7103,8 +7085,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_256(method_244(var4), var5);
    }
 
-   // $VF: renamed from: b (int, int, int, int, boolean) void
-   private static void method_338(int var0, int var1, int var2, int var3, boolean var4) {
+   private static void buildAudioToggleMenu(int var0, int var1, int var2, int var3, boolean var4) {
       method_243();
       audioOnMenuItemId = method_244(var0);
       audioOffMenuItemId = method_244(var1);
