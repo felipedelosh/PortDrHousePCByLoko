@@ -516,10 +516,14 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static int field_224;
    // $VF: renamed from: aT int
    private static int field_225;
-   // $VF: renamed from: aU int
-   private static int field_226;
-   // $VF: renamed from: aV int
-   private static int field_227 = 1;
+   //Game State Machine
+   private static int currentGameState;
+   private static int gameStateBeforeSuspension = 1;
+   private static int loadingTaskId;
+   private static int gameStateAfterLoading;
+   private static Thread loadingThread;
+   //Game SUB State Machine OF state 4
+   private static int introState;
    // $VF: renamed from: e javax.microedition.lcdui.Graphics
    private static Graphics field_228;
    //INTRO IMGs
@@ -531,8 +535,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static Image field_235;
    // $VF: renamed from: d javax.microedition.lcdui.Image
    private static Image field_236;
-   // $VF: renamed from: aZ int
-   private static int field_237;
    // $VF: renamed from: ba int
    private static int field_238;
    // $VF: renamed from: bb int
@@ -639,12 +641,6 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static int field_289;
    // $VF: renamed from: bJ int
    private static int field_290;
-   // $VF: renamed from: bP int
-   private static int field_296;
-   // $VF: renamed from: bQ int
-   private static int field_297;
-   // $VF: renamed from: b java.lang.Thread
-   private static Thread field_298;
    // $VF: renamed from: bR int
    private static int field_299;
    // $VF: renamed from: bS int
@@ -915,7 +911,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       this.method_31();
       initializeAudio();
       initializeLanguages();
-      method_222();
+      initializeGameState();
       field_36 = System.currentTimeMillis();
       method_91();
       field_29 = new Thread(this);
@@ -938,7 +934,7 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: v () void
    private static void method_13() {
-      method_227(0);
+      handleGameVisibilityChange(0);
       clearHeldKeys();
    }
 
@@ -948,7 +944,7 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: w () void
    private static void method_14() {
-      method_227(1);
+      handleGameVisibilityChange(1);
    }
 
    // $VF: renamed from: run () void
@@ -1010,7 +1006,7 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: x () void
    private static final void method_15() {
       updateInputState();
-      method_228();
+      updateGameState();
    }
 
    public Graphics getGraphics() {
@@ -1034,7 +1030,7 @@ public class GameEngine extends GameCanvas implements Runnable {
 
          field_40 = this.getGraphics();
          field_40.setClip(0, 0, field_31, field_32);
-         method_229(field_40);
+         renderGameState(field_40);
          field_40 = null;
       }
    }
@@ -5012,9 +5008,8 @@ public class GameEngine extends GameCanvas implements Runnable {
       return var2;
    }
 
-   // $VF: renamed from: r () void
-   public static final void method_222() {
-      field_226 = 0;
+   public static final void initializeGameState() {
+      currentGameState = 0;
    }
 
    private static void handleAudioVisibilityChange(boolean visible) {
@@ -5050,8 +5045,8 @@ public class GameEngine extends GameCanvas implements Runnable {
          stopAudio();
       } else {
          setAudioEnabled(true);
-         if (field_226 != 5 && field_226 != 6) {
-            if (field_226 == 2 && !field_390) {
+         if (currentGameState != 5 && currentGameState != 6) {
+            if (currentGameState == 2 && !field_390) {
                playAudio(1, true);
             }
          } else {
@@ -5084,43 +5079,41 @@ public class GameEngine extends GameCanvas implements Runnable {
          setAudioEnabled(true);
          field_71[3] = 33;
          setAudioVolume(field_71[3]);
-         if (field_226 == 5 || field_226 == 6) {
+         if (currentGameState == 5 || currentGameState == 6) {
             playAudio(0, true);
             return;
          }
 
-         if (field_226 == 2 && !field_390) {
+         if (currentGameState == 2 && !field_390) {
             playAudio(1, true);
          }
       }
    }
 
-   // $VF: renamed from: o (int) void
-   public static void method_227(int var0) {
-      if (var0 == 0) {
-         if (field_226 == 2) {
+   public static void handleGameVisibilityChange(int visibilityState) {
+      if (visibilityState == 0) {
+         if (currentGameState == 2) {
             method_331();
          }
 
          handleAudioVisibilityChange(false);
-         field_227 = field_226;
-         field_226 = 1;
-      } else if (field_227 != 1) {
-         field_226 = field_227;
-         field_227 = 1;
+         gameStateBeforeSuspension = currentGameState;
+         currentGameState = 1;
+      } else if (gameStateBeforeSuspension != 1) {
+         currentGameState = gameStateBeforeSuspension;
+         gameStateBeforeSuspension = 1;
          handleAudioVisibilityChange(true);
-         if (field_226 == 2) {
+         if (currentGameState == 2) {
             method_307();
          }
       }
    }
 
-   // $VF: renamed from: s () void
-   public static final void method_228() {
-      if (field_226 != 1) {
-         switch (field_226) {
+   public static final void updateGameState() {
+      if (currentGameState != 1) {
+         switch (currentGameState) {
             case 0:
-               method_230();
+               initializeGameEngine();
                return;
             case 2:
                method_306();
@@ -5129,7 +5122,7 @@ public class GameEngine extends GameCanvas implements Runnable {
                updateSplashScreens();
                return;
             case 4:
-               method_235();
+               updateIntroState();
                return;
             case 5:
                method_279();
@@ -5141,19 +5134,18 @@ public class GameEngine extends GameCanvas implements Runnable {
                method_241();
                return;
             case 8:
-               method_302();
+               startLoadingThread();
                return;
             case 9:
-               method_303();
+               updateLoadingState();
             case 1:
          }
       }
    }
 
-   // $VF: renamed from: c (javax.microedition.lcdui.Graphics) void
-   public static final void method_229(Graphics var0) {
-      field_228 = var0;
-      switch (field_226) {
+   public static final void renderGameState(Graphics graphics) {
+      field_228 = graphics;
+      switch (currentGameState) {
          case 2:
             method_308();
             break;
@@ -5161,7 +5153,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             renderSplashScreen();
             break;
          case 4:
-            method_239();
+            renderIntroState();
             break;
          case 5:
             method_280();
@@ -5173,17 +5165,16 @@ public class GameEngine extends GameCanvas implements Runnable {
             method_242();
             break;
          case 8:
-            method_304();
+            renderLoadingScreen();
             break;
          case 9:
-            method_304();
+            renderLoadingScreen();
       }
 
       field_228 = null;
    }
 
-   // $VF: renamed from: Y () void
-   private static void method_230() {
+   private static void initializeGameEngine() {
       field_222 = field_31;
       field_223 = field_32;
       field_224 = field_222 >> 1;
@@ -5213,7 +5204,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       currentSplashIndex = 0;
       field_235 = method_90(splashImageIds[0]);
       splashRemainingTicks = 32;
-      field_226 = 3;
+      currentGameState = 3;
    }
 
    private static void updateSplashScreens() {
@@ -5221,7 +5212,7 @@ public class GameEngine extends GameCanvas implements Runnable {
          currentSplashIndex++;
          if (currentSplashIndex == splashImageIds.length) {
             field_235 = null;
-            method_234();
+            initializeIntro();
          } else {
             field_235 = null;
             field_235 = method_90(splashImageIds[currentSplashIndex]);
@@ -5236,8 +5227,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_228.drawImage(field_235, field_222 >> 1, field_223 >> 1, 3);
    }
 
-   // $VF: renamed from: ac () void
-   private static void method_234() {
+   private static void initializeIntro() {
       field_287 = method_90(27);
       field_289 = 28;
       method_32(2);
@@ -5256,16 +5246,15 @@ public class GameEngine extends GameCanvas implements Runnable {
       field_239 = 16;
       field_240 = var0 * 2 + field_236.getHeight();
       field_238 = field_222 >> 1;
-      field_237 = 0;
-      field_226 = 4;
+      introState = 0;
+      currentGameState = 4;
    }
 
-   // $VF: renamed from: ad () void
-   private static void method_235() {
-      switch (field_237) {
+   private static void updateIntroState() {
+      switch (introState) {
          case 0:
             if (hasNewKeyPress() || --field_239 <= 0) {
-               field_237++;
+               introState++;
                return;
             }
             break;
@@ -5291,14 +5280,14 @@ public class GameEngine extends GameCanvas implements Runnable {
                }
 
                playAudio(0, true);
-               field_237++;
+               introState++;
                return;
             }
 
             if (var0 == 1) {
                setAudioEnabled(false);
                field_71[3] = 0;
-               field_237++;
+               introState++;
                return;
             }
             break;
@@ -5335,7 +5324,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_266(20, 21);
       int imageHeight = field_236.getHeight();
       method_267(1, imageHeight + 20, field_223 - imageHeight - 40, 1);
-      field_237 = 2;
+      introState = 2;
    }
 
    // $VF: renamed from: af () void
@@ -5356,23 +5345,22 @@ public class GameEngine extends GameCanvas implements Runnable {
          method_256(method_246((byte[])field_242[var1]), 32 + var1);
       }
 
-      if (field_226 == 4) {
+      if (currentGameState == 4) {
          method_258(field_222 >> 1, field_236.getHeight(), field_223 - field_236.getHeight(), 0);
-         field_237 = 4;
+         introState = 4;
       } else {
          method_292(0);
       }
    }
 
-   // $VF: renamed from: ag () void
-   private static void method_239() {
-      if (field_237 == 2) {
+   private static void renderIntroState() {
+      if (introState == 2) {
          method_270();
       } else {
          method_242();
       }
 
-      if (field_237 == 4) {
+      if (introState == 4) {
          method_262();
       }
    }
@@ -5385,7 +5373,7 @@ public class GameEngine extends GameCanvas implements Runnable {
          field_252[var0] = field_222 + (field_222 >> 1);
       }
 
-      field_226 = 7;
+      currentGameState = 7;
    }
 
    // $VF: renamed from: ai () void
@@ -5402,7 +5390,7 @@ public class GameEngine extends GameCanvas implements Runnable {
          field_238 = field_238 - field_244;
       } else {
          if (var0) {
-            method_301(0);
+            prepareLoading(0);
          }
       }
    }
@@ -5959,13 +5947,12 @@ public class GameEngine extends GameCanvas implements Runnable {
 
    // $VF: renamed from: aw () void
    private static void method_277() {
-      method_278();
+      enterMainMenu();
    }
 
-   // $VF: renamed from: ax () void
-   private static void method_278() {
+   private static void enterMainMenu() {
       method_283(0);
-      field_226 = 5;
+      currentGameState = 5;
    }
 
    // $VF: renamed from: ay () void
@@ -6042,7 +6029,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             return;
          case 9:
             if (method_269() >= 0) {
-               method_278();
+               enterMainMenu();
                field_290 = 0;
                return;
             }
@@ -6053,7 +6040,7 @@ public class GameEngine extends GameCanvas implements Runnable {
    private static void method_280() {
       switch (field_290) {
          case 0:
-            method_239();
+            renderIntroState();
             method_262();
             return;
          case 1:
@@ -6063,7 +6050,7 @@ public class GameEngine extends GameCanvas implements Runnable {
             return;
          case 3:
          case 7:
-            method_239();
+            renderIntroState();
          case 5:
             method_270();
          case 4:
@@ -6287,7 +6274,7 @@ public class GameEngine extends GameCanvas implements Runnable {
          field_71[1] = (byte)var0;
          setSelectedLanguage(var0);
          method_63("b");
-         if (field_226 == 4) {
+         if (currentGameState == 4) {
             initializeAudioEnablePrompt();
             return;
          }
@@ -6356,7 +6343,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_265(var0, var1);
       int var2 = field_236.getHeight();
       method_267(0, var2 + 20, field_223 - var2 - 40, 4);
-      field_226 = 6;
+      currentGameState = 6;
    }
 
    // $VF: renamed from: aJ () void
@@ -6366,7 +6353,7 @@ public class GameEngine extends GameCanvas implements Runnable {
          method_285();
          field_261 = var1;
          method_259();
-         field_226 = 5;
+         currentGameState = 5;
       }
    }
 
@@ -6375,68 +6362,62 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_270();
    }
 
-   // $VF: renamed from: aL () void
-   private static void method_300() {
-      if (field_298 != null && field_298.isAlive()) {
+   private static void yieldDuringLoading() {
+      if (loadingThread != null && loadingThread.isAlive()) {
          Thread.yield();
       }
    }
 
-   // $VF: renamed from: Q (int) void
-   private static void method_301(int var0) {
+   private static void prepareLoading(int loadingTaskId) {
       stopAudio();
-      field_296 = var0;
+      GameEngine.loadingTaskId = loadingTaskId;
       method_274(field_236.getHeight());
-      field_226 = 8;
+      currentGameState = 8;
    }
 
-   // $VF: renamed from: aM () void
-   private static void method_302() {
+   private static void startLoadingThread() {
       method_275();
-      field_226 = 9;
-      final int task = field_296;
-      field_298 = new Thread(() -> { if (task == 0) GameEngine.method_305(); });
-      field_298.setPriority(1);
-      field_298.start();
+      currentGameState = 9;
+      final int task = loadingTaskId;
+      loadingThread = new Thread(() -> { if (task == 0) GameEngine.loadGameplayResources(); });
+      loadingThread.setPriority(1);
+      loadingThread.start();
    }
 
-   // $VF: renamed from: aN () void
-   private static void method_303() {
-      if (!field_298.isAlive()) {
-         field_298 = null;
+   private static void updateLoadingState() {
+      if (!loadingThread.isAlive()) {
+         loadingThread = null;
          playAudio(1, true);
-         field_226 = field_297;
+         currentGameState = gameStateAfterLoading;
       } else {
          method_275();
       }
    }
 
-   // $VF: renamed from: aO () void
-   private static void method_304() {
+   private static void renderLoadingScreen() {
       method_276();
    }
 
-   // $VF: renamed from: aP () void
-   private static void method_305() {
+   private static void loadGameplayResources() {
       field_236 = null;
       field_235 = null;
       field_321 = false;
       method_64();
       method_48(2, 0);
       method_91();
-      method_300();
+      yieldDuringLoading();
       method_32(0);
-      method_300();
+      yieldDuringLoading();
       method_32(1);
-      method_300();
+      yieldDuringLoading();
       method_38(0);
-      method_300();
+      yieldDuringLoading();
       method_38(1);
-      method_300();
+      yieldDuringLoading();
       method_63("a");
-      method_300();
+      yieldDuringLoading();
       method_179();
-      method_300();
+      yieldDuringLoading();
       method_181();
       field_326 = method_197("poid");
       field_327 = method_197("pwal");
@@ -6525,7 +6506,7 @@ public class GameEngine extends GameCanvas implements Runnable {
                   method_379();
                   method_326();
                   method_388(false);
-                  field_297 = 2;
+                  gameStateAfterLoading = 2;
                   return;
                }
 
@@ -7208,7 +7189,7 @@ public class GameEngine extends GameCanvas implements Runnable {
    // $VF: renamed from: bk () void
    private static void method_342() {
       method_341();
-      method_278();
+      enterMainMenu();
       playAudio(0, true);
       field_290 = 0;
    }
@@ -7224,7 +7205,7 @@ public class GameEngine extends GameCanvas implements Runnable {
       int var0 = field_236.getHeight();
       method_267(0, var0 + 20, field_223 - var0 - 40, 1);
       field_290 = 8;
-      field_226 = 5;
+      currentGameState = 5;
    }
 
    // $VF: renamed from: bm () void
@@ -7892,14 +7873,14 @@ public class GameEngine extends GameCanvas implements Runnable {
       method_99();
       method_159();
       method_91();
-      method_300();
+      yieldDuringLoading();
       method_123(field_375);
-      method_300();
+      yieldDuringLoading();
       method_122(true);
       field_97 = -field_92 * 3;
       field_96 = field_97 - field_80;
       method_101();
-      method_300();
+      yieldDuringLoading();
 
       for (int var0 = 0; var0 < 4; var0++) {
          method_147(field_336, 0, 0, 0);
