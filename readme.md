@@ -57,7 +57,7 @@ During initial source recovery, a rendering freeze was traced to decompiled loop
 
 ## :mag: Current Phase: Semantic Deobfuscation
 
-Decompilation recovered executable Java source, but many identifiers remain obfuscated, such as `field_71`, `method_228`, and local variables such as `var0`. Compilable code is not necessarily understandable code.
+Decompilation recovered executable Java source, but many identifiers remain obfuscated, such as `field_71`, `method_306`, and local variables such as `var0`. Compilable code is not necessarily understandable code.
 
 The current task is to reconstruct the meaning of these identifiers from their declarations, assignments, call sites, control flow, resource usage, and observable behavior. Names are written in English and are descriptive of the responsibilities supported by the evidence.
 
@@ -96,7 +96,7 @@ The recovered audio architecture now includes the initial sound prompt, main and
 
 ```mermaid
 flowchart TD
-    Prompt[initializeAudioEnablePrompt] --> Answer[method_235: sound response]
+    Prompt[initializeAudioEnablePrompt] --> Answer[updateIntroState: sound response]
     MainMenu[buildMainMenuAudioSettings] --> Builders[Shared audio menu builders]
     PauseMenu[buildPauseMenuAudioSettings] --> Builders
     Builders --> Action[changeAudioMenuSetting]
@@ -119,6 +119,50 @@ The volume constants and shared save-data/state identifiers remain candidates fo
 
 See [audioSystemGame.md](Docs/originalDevDoc/audioSystemGame.md) for the detailed investigation.
 
+### Completed milestone: state machine deobfuscation (rounds 1–3)
+
+The original engine uses integer-based state dispatch, with separate update and render methods and nested state machines. The first three investigation rounds have completed the agreed inventory of 40 identifiers: 9 fields, 22 methods and 9 parameters/local variables. This milestone does not include every gameplay substate or transition helper.
+
+| Original identifier | Current semantic identifier |
+| :--- | :--- |
+| `field_226` | `currentGameState` |
+| `field_227` | `gameStateBeforeSuspension` |
+| `method_228` | `updateGameState` |
+| `method_229` | `renderGameState` |
+| `field_237` | `introState` |
+| `field_290` | `mainMenuState` |
+| `field_321` | `pauseMenuActive` |
+| `field_322` | `pauseMenuState` |
+| `field_296` | `loadingTaskId` |
+| `field_297` | `gameStateAfterLoading` |
+| `field_298` | `loadingThread` |
+
+```mermaid
+flowchart TD
+    Init[0: Initialization] --> Splash[3: Splash screens]
+    Splash --> Intro[4: Intro and preferences]
+    Intro --> Menu[5: Main menu]
+    Menu --> Info[6: Information dialog]
+    Info --> Menu
+    Menu --> Transition[7: Animated transition]
+    Transition --> Start[8: Start loading]
+    Start --> Wait[9: Wait for loading thread]
+    Wait --> Gameplay[2: Gameplay]
+    Gameplay --> Menu
+    Gameplay --> Pause[Pause menu within state 2]
+    Pause --> Gameplay
+    Active[Any active main state] -. Hide event .-> Suspended[1: Application suspension]
+    Suspended -. Restore saved state .-> Active
+```
+
+The diagram is a simplified map of the recovered transitions. The pause menu is not main state 1: it is a nested mode inside gameplay (state 2). The intro, main menu and pause menu each maintain their own state variables. The loading process uses a separate thread; completion currently means that the thread is no longer alive, not that successful loading has been explicitly verified.
+
+The numeric IDs, original switches and intentional fall-through behavior are preserved. Remaining work includes transition helpers, information dialogs, gameplay modes, minigames and state constants. No enum or new state-machine framework has been introduced.
+
+The reference source snapshot `java(20261128-035013).zip` was compiled with JDK 21 using both `--release 17` and `--release 21` (15 Java files; unchecked-operation warnings only). Runtime regression tests were not performed for this documentation update.
+
+See [stateMachineGame.md](Docs/originalDevDoc/stateMachineGame.md) for the detailed Spanish investigation, identifier inventory, transitions and limitations.
+
 ## :building_construction: Repository Structure
 
 The repository root contains the preservation materials and documentation. The **desktop Gradle module is located in the outer `src/` directory**, and its Java source set is inside a second, nested `src/` directory.
@@ -128,7 +172,8 @@ PortDrHousePCByLoko/
 ├── Docs/                         # Documentation and images
 │   ├── banner.png
 │   ├── originalDevDoc/
-│   │   └── audioSystemGame.md
+│   │   ├── audioSystemGame.md
+│   │   └── stateMachineGame.md
 │   └── savethegame.md
 ├── INPUT/                        # Original game materials
 ├── TOOLS/                        # Reverse-engineering tools
@@ -183,6 +228,8 @@ flowchart TD
     Main[Main.java] --> Mapp[Mapp.java]
     Mapp --> Engine[GameEngine.java]
     Mapp --> MIDlet[MIDlet and Display adapters]
+    Engine --> States[Main and nested state machines]
+    States --> Loading[Loading thread]
     Engine --> Canvas[GameCanvas / Graphics / Image / Font]
     Engine --> Audio[Manager / Player / VolumeControl]
     Engine --> Save[RecordStore]
@@ -318,7 +365,13 @@ Initial desktop runtime tests have rendered the original hospital, characters, a
 - [ ] Extract audio-specific numeric constants where justified (IDs, volume levels, sentinel and save index).
 - [ ] Deobfuscate persistence and save-data indices.
 - [ ] Deobfuscate binary and image resource loading.
-- [ ] Investigate the game loop, lifecycle, and state machine.
+- [x] Deobfuscate the main state dispatcher and suspension/resume state.
+- [x] Deobfuscate the loading thread coordination and intro state machine.
+- [x] Deobfuscate the main and pause menu state machines and inventoried local variables.
+- [x] Document the first three state-machine investigation rounds.
+- [ ] Investigate remaining transition helpers, state 6, gameplay and minigame substates.
+- [ ] Extract confirmed state constants without changing their numeric values.
+- [ ] Complete investigation of the game loop and lifecycle.
 - [ ] Investigate menu construction and navigation.
 - [ ] Investigate rendering, sprites, maps, and collision detection.
 - [ ] Investigate character movement and animation.
@@ -326,11 +379,13 @@ Initial desktop runtime tests have rendered the original hospital, characters, a
 - [ ] Investigate minigames and remaining gameplay systems.
 - [ ] Rename local variables and parameters as their meaning becomes clear.
 
-Progress is tracked by investigated identifiers and subsystems rather than by an unverified percentage of project completion. The audio naming inventory is complete; shared dependencies and numeric constants remain outside that milestone. Completing a rename batch does not imply that all behavior of the subsystem is fully understood or tested.
+Progress is tracked by investigated identifiers and subsystems rather than by an unverified percentage of project completion. The audio naming inventory and the first three state-machine rounds are complete (77 and 40 inventoried identifiers respectively); shared dependencies, additional substates and numeric constants remain outside those milestones. Completing a rename batch does not imply that all behavior of the subsystem is fully understood or tested.
 
 ### Phase 3 — Compatibility, regression testing, and future improvements
 
 - [ ] Restore the original multi-level volume control through the Java ME compatibility layer.
+- [ ] Evaluate optional high-quality PCM WAV playback while retaining MIDI compatibility.
+- [ ] Validate desktop visibility events and state-machine transitions.
 - [ ] Validate save/load behavior and complete gameplay on supported JDKs.
 - [ ] Compare behavior and rendering against the original game.
 - [ ] Evaluate desktop usability improvements after the relevant original subsystems are understood.
@@ -343,6 +398,7 @@ Technical notes are maintained in [Docs/](Docs/). The detailed module and port d
 | Document | Purpose |
 | :--- | :--- |
 | [Audio system](Docs/originalDevDoc/audioSystemGame.md) | Original audio architecture, semantic identifiers, volume behavior, persistence, and adapter limitations. |
+| [State machines and transitions](Docs/originalDevDoc/stateMachineGame.md) | Main dispatcher, nested state machines, loading, transition map, identifier inventory and validation limits. |
 | [Save system](Docs/savethegame.md) | File-based RecordStore and save location. |
 | [Module README](src/README.md) | Desktop module technical documentation. |
 | [Port README](src/README_PORT.md) | Desktop port notes. |
